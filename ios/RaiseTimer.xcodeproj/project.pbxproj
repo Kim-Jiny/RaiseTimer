@@ -31,7 +31,7 @@
 		8444EF517CBBBB4D98ECD30D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8F20C8ABB641D9482DBC622E /* TournamentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TournamentStore.swift; sourceTree = "<group>"; };
 		99F5F819D015979D003C502D /* PlayersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayersView.swift; sourceTree = "<group>"; };
-		C413E9DEEE4FB34B80CA53A6 /* RaiseTimer.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = RaiseTimer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		C413E9DEEE4FB34B80CA53A6 /* RaiseTimer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RaiseTimer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E121677BDF6148CD6F42AE29 /* PayoutCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayoutCalculator.swift; sourceTree = "<group>"; };
 		EDE93F4F60FB4AE3C00A3EDA /* RaiseTimerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseTimerApp.swift; sourceTree = "<group>"; };
 		EF80207ABD9AEB37332BC81C /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
@@ -158,11 +158,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1430;
-				TargetAttributes = {
-					59C0CBBCB7ABFDDB80DEA5E3 = {
-						DevelopmentTeam = "";
-					};
-				};
 			};
 			buildConfigurationList = A5C6E526DE9006AAFD17757F /* Build configuration list for PBXProject "RaiseTimer" */;
 			developmentRegion = en;
@@ -287,6 +282,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HW9XJ9J5M2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = RaiseTimer;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
@@ -312,6 +308,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HW9XJ9J5M2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = RaiseTimer;
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;

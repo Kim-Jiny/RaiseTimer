@@ -6,14 +6,15 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.Undo
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Undo
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -21,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -36,6 +38,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jiny.raisetimer.domain.model.Player
 import com.jiny.raisetimer.ui.TournamentViewModel
+import com.jiny.raisetimer.ui.theme.SurfaceElevated
+import com.jiny.raisetimer.ui.theme.SurfaceHighlight
 
 @Composable
 fun PlayersScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues) {
@@ -64,6 +68,40 @@ fun PlayersScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues)
             )
         }
 
+        Surface(
+            color = SurfaceElevated,
+            shape = MaterialTheme.shapes.large,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column {
+                    Text("총 엔트리", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        text = "${state.totalBuyInsAndRebuys}",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleLarge,
+                    )
+                }
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(
+                        text = if (rebuyAllowed) "리바이 가능" else "리바이 닫힘",
+                        color = if (rebuyAllowed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                    )
+                    Text(
+                        text = "상금 ${"%,d".format(state.totalPrizePool)}원",
+                        color = MaterialTheme.colorScheme.onSurface,
+                    )
+                }
+            }
+        }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -88,6 +126,30 @@ fun PlayersScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues)
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
+            if (state.players.isEmpty()) {
+                item {
+                    Surface(
+                        color = SurfaceHighlight,
+                        shape = MaterialTheme.shapes.large,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp),
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            Text("아직 참가자가 없습니다", color = MaterialTheme.colorScheme.onSurface)
+                            Text(
+                                text = "이름을 추가하면 탈락 관리와 상금 계산이 바로 연결됩니다.",
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    }
+                }
+            }
             items(state.players, key = { it.id }) { player ->
                 PlayerRow(
                     player = player,
@@ -116,9 +178,9 @@ private fun PlayerRow(
     Card(
         colors = CardDefaults.cardColors(
             containerColor = if (player.isEliminated)
-                MaterialTheme.colorScheme.surface
+                SurfaceElevated
             else
-                MaterialTheme.colorScheme.surfaceVariant
+                SurfaceHighlight
         ),
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -161,7 +223,7 @@ private fun PlayerRow(
 
             if (player.isEliminated) {
                 IconButton(onClick = onRevive) {
-                    Icon(Icons.Filled.Undo, contentDescription = "되살리기")
+                    Icon(Icons.AutoMirrored.Filled.Undo, contentDescription = "되살리기")
                 }
             } else {
                 IconButton(onClick = onEliminate) {

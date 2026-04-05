@@ -12,6 +12,12 @@ struct PlayersView: View {
                 RTTheme.feltGreenDark.ignoresSafeArea()
                 VStack(spacing: 12) {
                     HStack {
+                        StatCapsule(label: "총 엔트리", value: "\(state.totalBuyInsAndRebuys)")
+                        StatCapsule(label: "상금", value: "\(formattedAmount(state.totalPrizePool))원")
+                    }
+                    .padding(.horizontal)
+
+                    HStack {
                         TextField("이름 입력", text: $newName)
                             .textFieldStyle(.roundedBorder)
                         Button {
@@ -26,10 +32,21 @@ struct PlayersView: View {
                     .padding(.horizontal)
 
                     List {
+                        if state.players.isEmpty {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text("아직 참가자가 없습니다")
+                                    .foregroundStyle(.white)
+                                Text("플레이어를 추가하면 탈락 관리와 상금 계산이 바로 연결됩니다.")
+                                    .font(.caption)
+                                    .foregroundStyle(RTTheme.onSurfaceMuted)
+                            }
+                            .padding(.vertical, 24)
+                            .listRowBackground(RTTheme.surfaceHighlight)
+                        }
                         ForEach(state.players) { player in
                             PlayerRow(player: player, rebuyAllowed: rebuyAllowed)
                                 .listRowBackground(
-                                    player.isEliminated ? RTTheme.surface : RTTheme.feltGreen
+                                    player.isEliminated ? RTTheme.surfaceElevated : RTTheme.surfaceHighlight
                                 )
                         }
                         .onDelete { indexSet in
@@ -44,6 +61,26 @@ struct PlayersView: View {
             .navigationTitle("참가자 \(state.activePlayers.count)/\(state.players.count)")
             .toolbarColorScheme(.dark, for: .navigationBar)
         }
+    }
+}
+
+private struct StatCapsule: View {
+    let label: String
+    let value: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(RTTheme.onSurfaceMuted)
+            Text(value)
+                .font(.headline.bold())
+                .foregroundStyle(.white)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .background(RTTheme.surfaceElevated, in: RoundedRectangle(cornerRadius: 18))
     }
 }
 
@@ -109,4 +146,10 @@ private struct PlayerRow: View {
             }
         }
     }
+}
+
+private func formattedAmount(_ value: Int) -> String {
+    let formatter = NumberFormatter()
+    formatter.numberStyle = .decimal
+    return formatter.string(from: NSNumber(value: value)) ?? "\(value)"
 }

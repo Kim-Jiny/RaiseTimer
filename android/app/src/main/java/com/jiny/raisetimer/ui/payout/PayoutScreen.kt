@@ -21,6 +21,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,6 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jiny.raisetimer.domain.PayoutCalculator
 import com.jiny.raisetimer.ui.TournamentViewModel
+import com.jiny.raisetimer.ui.theme.SurfaceElevated
+import com.jiny.raisetimer.ui.theme.SurfaceHighlight
 
 @Composable
 fun PayoutScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues) {
@@ -53,8 +56,35 @@ fun PayoutScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues) 
             color = MaterialTheme.colorScheme.onBackground,
         )
 
+        Surface(
+            color = SurfaceHighlight,
+            shape = MaterialTheme.shapes.large,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Column {
+                    Text("분배 순위", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text("${percents.size}명", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
+                }
+                Column(horizontalAlignment = Alignment.End) {
+                    Text("합계", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(
+                        "$totalPercent%",
+                        color = if (totalPercent == 100) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                        fontWeight = FontWeight.Bold,
+                    )
+                }
+            }
+        }
+
         Card(
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            colors = CardDefaults.cardColors(containerColor = SurfaceElevated),
             modifier = Modifier.fillMaxWidth(),
         ) {
             Column(
@@ -106,7 +136,7 @@ fun PayoutScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues) 
         ) {
             itemsIndexed(percents) { index, percent ->
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                    colors = CardDefaults.cardColors(containerColor = SurfaceHighlight),
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Row(

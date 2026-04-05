@@ -14,6 +14,11 @@ struct PayoutView: View {
                 RTTheme.feltGreenDark.ignoresSafeArea()
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            SummaryPill(label: "분배 순위", value: "\(percents.count)명")
+                            SummaryPill(label: "합계", value: "\(totalPercent)%", highlight: totalPercent == 100)
+                        }
+
                         TotalPrizeCard(
                             pool: state.totalPrizePool,
                             gross: state.totalBuyInsGross,
@@ -71,6 +76,27 @@ struct PayoutView: View {
     }
 }
 
+private struct SummaryPill: View {
+    let label: String
+    let value: String
+    var highlight: Bool = true
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(label)
+                .font(.caption)
+                .foregroundStyle(RTTheme.onSurfaceMuted)
+            Text(value)
+                .font(.headline.bold())
+                .foregroundStyle(highlight ? RTTheme.chipGold : RTTheme.chipRed)
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .background(RTTheme.surfaceHighlight, in: RoundedRectangle(cornerRadius: 18))
+    }
+}
+
 private struct TotalPrizeCard: View {
     let pool: Int
     let gross: Int
@@ -97,7 +123,7 @@ private struct TotalPrizeCard: View {
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding()
-        .background(RTTheme.surface, in: RoundedRectangle(cornerRadius: 16))
+        .background(RTTheme.surfaceElevated, in: RoundedRectangle(cornerRadius: 16))
     }
 }
 
@@ -133,7 +159,7 @@ private struct PayoutRow: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
-        .background(RTTheme.feltGreen, in: RoundedRectangle(cornerRadius: 12))
+        .background(RTTheme.surfaceHighlight, in: RoundedRectangle(cornerRadius: 12))
     }
 }
 
