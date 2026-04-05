@@ -193,11 +193,12 @@ final class TournamentStore {
         var levels = state.config.levels
         levels.remove(at: index)
 
+        let lastIndex = levels.count - 1
         let adjustedIndex: Int
         if index < state.currentLevelIndex {
             adjustedIndex = state.currentLevelIndex - 1
-        } else if state.currentLevelIndex > levels.lastIndex {
-            adjustedIndex = levels.lastIndex
+        } else if state.currentLevelIndex > lastIndex {
+            adjustedIndex = lastIndex
         } else {
             adjustedIndex = state.currentLevelIndex
         }
