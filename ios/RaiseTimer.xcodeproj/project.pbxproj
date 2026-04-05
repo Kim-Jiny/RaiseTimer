@@ -1,0 +1,416 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		009E20A4E109B451D593F99C /* TimerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224B4CBEC42C6685EBB65E52 /* TimerEngine.swift */; };
+		62061466FA9035E4F97873A2 /* SoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A8064A2FE4CE3EBD95F77D2 /* SoundPlayer.swift */; };
+		68352189455FCFE77340B681 /* StructureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C2570570CB1B249EEA56A3C /* StructureView.swift */; };
+		73A618FDBF09A5FD5D9FD635 /* PayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D300060B479BBBDD7F92414 /* PayoutView.swift */; };
+		84107837CC7F49C696E4B480 /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ABEB8F6EF0159CCBF67F99F /* TimerView.swift */; };
+		84C5C04AF7F5889DA7C55451 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 805CDC2D0F23E8F01815833A /* Assets.xcassets */; };
+		99A801CC03629CE917A830F3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8444EF517CBBBB4D98ECD30D /* ContentView.swift */; };
+		AFFAF5A4BA353D9F4A795429 /* PayoutCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E121677BDF6148CD6F42AE29 /* PayoutCalculator.swift */; };
+		B9ACDC8B613FC6A77999B60D /* PlayersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99F5F819D015979D003C502D /* PlayersView.swift */; };
+		BB28BBF6FCE486DDA10BB98E /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF80207ABD9AEB37332BC81C /* Models.swift */; };
+		CF0388461F7EAE897D957A0E /* RaiseTimerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDE93F4F60FB4AE3C00A3EDA /* RaiseTimerApp.swift */; };
+		FE881669B78A8B67B107184F /* TournamentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F20C8ABB641D9482DBC622E /* TournamentStore.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		224B4CBEC42C6685EBB65E52 /* TimerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerEngine.swift; sourceTree = "<group>"; };
+		3A8064A2FE4CE3EBD95F77D2 /* SoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundPlayer.swift; sourceTree = "<group>"; };
+		4D300060B479BBBDD7F92414 /* PayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayoutView.swift; sourceTree = "<group>"; };
+		6C2570570CB1B249EEA56A3C /* StructureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructureView.swift; sourceTree = "<group>"; };
+		7ABEB8F6EF0159CCBF67F99F /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
+		805CDC2D0F23E8F01815833A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		8444EF517CBBBB4D98ECD30D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		8F20C8ABB641D9482DBC622E /* TournamentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TournamentStore.swift; sourceTree = "<group>"; };
+		99F5F819D015979D003C502D /* PlayersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayersView.swift; sourceTree = "<group>"; };
+		C413E9DEEE4FB34B80CA53A6 /* RaiseTimer.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = RaiseTimer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E121677BDF6148CD6F42AE29 /* PayoutCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayoutCalculator.swift; sourceTree = "<group>"; };
+		EDE93F4F60FB4AE3C00A3EDA /* RaiseTimerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseTimerApp.swift; sourceTree = "<group>"; };
+		EF80207ABD9AEB37332BC81C /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		4A6C045AB398288E4C800779 /* Payout */ = {
+			isa = PBXGroup;
+			children = (
+				4D300060B479BBBDD7F92414 /* PayoutView.swift */,
+			);
+			path = Payout;
+			sourceTree = "<group>";
+		};
+		6BF5F8E0986D42909054E18E /* Features */ = {
+			isa = PBXGroup;
+			children = (
+				4A6C045AB398288E4C800779 /* Payout */,
+				B183777A15E5D64C7C75E744 /* Players */,
+				AD82C0E8D69FC3233635F9DF /* Structure */,
+				FE368D23115541ABE4DE5D8A /* Timer */,
+			);
+			path = Features;
+			sourceTree = "<group>";
+		};
+		7D2820712724219443157D36 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				C413E9DEEE4FB34B80CA53A6 /* RaiseTimer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		959CA99A1CE573557C96BAE7 = {
+			isa = PBXGroup;
+			children = (
+				ABE902CD9A066F2AEF949C34 /* RaiseTimer */,
+				7D2820712724219443157D36 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		ABE902CD9A066F2AEF949C34 /* RaiseTimer */ = {
+			isa = PBXGroup;
+			children = (
+				805CDC2D0F23E8F01815833A /* Assets.xcassets */,
+				8444EF517CBBBB4D98ECD30D /* ContentView.swift */,
+				EDE93F4F60FB4AE3C00A3EDA /* RaiseTimerApp.swift */,
+				E6ED035C0D0C452E15FF00E3 /* Domain */,
+				6BF5F8E0986D42909054E18E /* Features */,
+				FC01B4C9EEB0E6C1AC65BCFE /* Services */,
+			);
+			path = RaiseTimer;
+			sourceTree = "<group>";
+		};
+		AD82C0E8D69FC3233635F9DF /* Structure */ = {
+			isa = PBXGroup;
+			children = (
+				6C2570570CB1B249EEA56A3C /* StructureView.swift */,
+			);
+			path = Structure;
+			sourceTree = "<group>";
+		};
+		B183777A15E5D64C7C75E744 /* Players */ = {
+			isa = PBXGroup;
+			children = (
+				99F5F819D015979D003C502D /* PlayersView.swift */,
+			);
+			path = Players;
+			sourceTree = "<group>";
+		};
+		E6ED035C0D0C452E15FF00E3 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				EF80207ABD9AEB37332BC81C /* Models.swift */,
+				E121677BDF6148CD6F42AE29 /* PayoutCalculator.swift */,
+				224B4CBEC42C6685EBB65E52 /* TimerEngine.swift */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		FC01B4C9EEB0E6C1AC65BCFE /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				3A8064A2FE4CE3EBD95F77D2 /* SoundPlayer.swift */,
+				8F20C8ABB641D9482DBC622E /* TournamentStore.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		FE368D23115541ABE4DE5D8A /* Timer */ = {
+			isa = PBXGroup;
+			children = (
+				7ABEB8F6EF0159CCBF67F99F /* TimerView.swift */,
+			);
+			path = Timer;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		59C0CBBCB7ABFDDB80DEA5E3 /* RaiseTimer */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 911D3A3CCEDB6B1D88D745A1 /* Build configuration list for PBXNativeTarget "RaiseTimer" */;
+			buildPhases = (
+				AA189F5D6F9591C4D6436FE6 /* Sources */,
+				CD575D94A8C3FF4F729A080C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RaiseTimer;
+			packageProductDependencies = (
+			);
+			productName = RaiseTimer;
+			productReference = C413E9DEEE4FB34B80CA53A6 /* RaiseTimer.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5ED4C7852DBAB7090CE231A4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					59C0CBBCB7ABFDDB80DEA5E3 = {
+						DevelopmentTeam = "";
+					};
+				};
+			};
+			buildConfigurationList = A5C6E526DE9006AAFD17757F /* Build configuration list for PBXProject "RaiseTimer" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 959CA99A1CE573557C96BAE7;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 7D2820712724219443157D36 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				59C0CBBCB7ABFDDB80DEA5E3 /* RaiseTimer */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		CD575D94A8C3FF4F729A080C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				84C5C04AF7F5889DA7C55451 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		AA189F5D6F9591C4D6436FE6 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				99A801CC03629CE917A830F3 /* ContentView.swift in Sources */,
+				BB28BBF6FCE486DDA10BB98E /* Models.swift in Sources */,
+				AFFAF5A4BA353D9F4A795429 /* PayoutCalculator.swift in Sources */,
+				73A618FDBF09A5FD5D9FD635 /* PayoutView.swift in Sources */,
+				B9ACDC8B613FC6A77999B60D /* PlayersView.swift in Sources */,
+				CF0388461F7EAE897D957A0E /* RaiseTimerApp.swift in Sources */,
+				62061466FA9035E4F97873A2 /* SoundPlayer.swift in Sources */,
+				68352189455FCFE77340B681 /* StructureView.swift in Sources */,
+				009E20A4E109B451D593F99C /* TimerEngine.swift in Sources */,
+				84107837CC7F49C696E4B480 /* TimerView.swift in Sources */,
+				FE881669B78A8B67B107184F /* TournamentStore.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		5FECC1C4D7868454889BA6C5 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		919C32904078F3154F8B7681 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = RaiseTimer;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jiny.raisetimer;
+				PRODUCT_NAME = RaiseTimer;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B92BFEF374B8DBAA389C0C42 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = RaiseTimer;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.jiny.raisetimer;
+				PRODUCT_NAME = RaiseTimer;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		D2721AB2BF99F0162A97D23A /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		911D3A3CCEDB6B1D88D745A1 /* Build configuration list for PBXNativeTarget "RaiseTimer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				919C32904078F3154F8B7681 /* Debug */,
+				B92BFEF374B8DBAA389C0C42 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A5C6E526DE9006AAFD17757F /* Build configuration list for PBXProject "RaiseTimer" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5FECC1C4D7868454889BA6C5 /* Debug */,
+				D2721AB2BF99F0162A97D23A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 5ED4C7852DBAB7090CE231A4 /* Project object */;
+}

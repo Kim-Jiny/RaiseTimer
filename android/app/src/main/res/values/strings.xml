@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">RaiseTimer</string>
+
+    <string name="tab_timer">타이머</string>
+    <string name="tab_players">플레이어</string>
+    <string name="tab_structure">블라인드</string>
+    <string name="tab_payout">상금</string>
+
+    <string name="action_start">시작</string>
+    <string name="action_pause">일시정지</string>
+    <string name="action_reset">리셋</string>
+    <string name="action_prev">이전</string>
+    <string name="action_next">다음</string>
+    <string name="action_add">추가</string>
+    <string name="action_delete">삭제</string>
+
+    <string name="label_level">레벨 %1$d</string>
+    <string name="label_break">휴식</string>
+    <string name="label_next_level">다음</string>
+    <string name="label_blinds_format">%1$d / %2$d</string>
+    <string name="label_blinds_with_ante_format">%1$d / %2$d (앤티 %3$d)</string>
+    <string name="label_players_remaining">남은 인원 %1$d / %2$d</string>
+    <string name="label_total_prize">총 상금</string>
+    <string name="label_starting_stack">시작 스택</string>
+    <string name="label_buy_in">바이인</string>
+    <string name="label_rebuy">리바이</string>
+    <string name="label_add_player">참가자 추가</string>
+    <string name="label_eliminate">탈락</string>
+    <string name="label_place">%1$d위</string>
+</resources>

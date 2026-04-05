@@ -1,0 +1,27 @@
+# Android
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+android/.idea/
+android/captures/
+android/*.iml
+android/app/*.iml
+# gradle-wrapper.jar is intentionally committed (Gradle convention)
+
+# iOS
+ios/RaiseTimer.xcworkspace/
+ios/DerivedData/
+ios/build/
+xcuserdata/
+*.xcuserstate
+
+# macOS
+.DS_Store
+
+# Editors
+.vscode/
+*.swp
+
+# Claude Code local settings
+.claude/
