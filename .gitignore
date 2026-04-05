@@ -9,6 +9,12 @@ android/*.iml
 android/app/*.iml
 # gradle-wrapper.jar is intentionally committed (Gradle convention)
 
+# Android signing — NEVER commit these to a public repo
+android/keystore.properties
+android/app/*.jks
+android/app/*.keystore
+android/**/release.keystore
+
 # iOS
 ios/RaiseTimer.xcworkspace/
 ios/DerivedData/
