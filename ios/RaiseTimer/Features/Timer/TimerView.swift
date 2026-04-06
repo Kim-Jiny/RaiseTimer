@@ -127,6 +127,30 @@ struct TimerView: View {
             }
 
             Spacer()
+
+            HStack(spacing: 16) {
+                RoundActionButton(systemName: "backward.fill", tint: RTTheme.surfaceHighlight) {
+                    store.previousLevel()
+                }
+
+                Button {
+                    store.toggleRunning()
+                } label: {
+                    Label(
+                        state.isRunning ? "일시정지" : "시작",
+                        systemImage: state.isRunning ? "pause.fill" : "play.fill"
+                    )
+                    .font(.title3.bold())
+                    .frame(maxWidth: .infinity, minHeight: 56)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(RTTheme.chipGold)
+                .foregroundStyle(RTTheme.feltGreenDark)
+
+                RoundActionButton(systemName: "forward.fill", tint: RTTheme.surfaceHighlight) {
+                    store.nextLevel()
+                }
+            }
         }
         .padding(.horizontal, 28)
         .padding(.vertical, 20)
