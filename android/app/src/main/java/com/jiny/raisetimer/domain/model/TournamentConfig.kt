@@ -3,6 +3,31 @@ package com.jiny.raisetimer.domain.model
 import kotlinx.serialization.Serializable
 
 @Serializable
+enum class ThemePreset {
+    EMERALD,
+    OCEAN,
+    RUBY,
+    SUNSET,
+    LAVENDER,
+    SLATE,
+    MINT,
+    CORAL,
+    MIDNIGHT,
+}
+
+@Serializable
+data class BlindStructurePreset(
+    val id: String,
+    val name: String,
+    val startingStack: Int,
+    val buyInAmount: Int,
+    val feePerEntry: Int,
+    val rebuyAllowed: Boolean,
+    val levels: List<BlindLevel>,
+    val payoutPercents: List<Int>,
+)
+
+@Serializable
 data class TournamentConfig(
     val startingStack: Int = 10_000,
     val buyInAmount: Int = 50_000,
@@ -11,6 +36,10 @@ data class TournamentConfig(
     val rebuyAllowed: Boolean = true,
     val levels: List<BlindLevel> = defaultBlindStructure(),
     val payoutPercents: List<Int> = listOf(50, 30, 20),
+    val themePreset: ThemePreset = ThemePreset.EMERALD,
+    val fullscreenLogoFileName: String? = null,
+    val fullscreenLogoBase64: String? = null,
+    val savedBlindStructures: List<BlindStructurePreset> = emptyList(),
 ) {
     companion object {
         fun defaultBlindStructure(): List<BlindLevel> = listOf(

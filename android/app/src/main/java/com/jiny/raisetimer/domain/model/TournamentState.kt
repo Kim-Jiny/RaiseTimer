@@ -17,13 +17,30 @@ data class TournamentState(
     val lastTickAt: Long? = null,
 ) {
     val currentLevel: BlindLevel
-        get() = config.levels[currentLevelIndex.coerceIn(0, config.levels.lastIndex)]
+        get() = if (config.levels.isEmpty()) {
+            BlindLevel(level = 1, smallBlind = 0, bigBlind = 0, durationSeconds = 0)
+        } else {
+            config.levels[currentLevelIndex.coerceIn(0, config.levels.lastIndex)]
+        }
 
     val nextLevel: BlindLevel?
-        get() = config.levels.getOrNull(currentLevelIndex + 1)
+        get() = if (config.levels.isEmpty()) null else config.levels.getOrNull(currentLevelIndex + 1)
 
     val activePlayers: List<Player>
         get() = players.filter { !it.isEliminated }
+
+    val isTournamentComplete: Boolean
+        get() = players.isNotEmpty() && activePlayers.size <= 1
+
+    val winner: Player?
+        get() = players.firstOrNull { it.placement == 1 } ?: activePlayers.singleOrNull()
+
+    val finalStandings: List<Player>
+        get() = players
+            .sortedWith(
+                compareBy<Player> { it.placement ?: Int.MAX_VALUE }
+                    .thenBy { it.name.lowercase() }
+            )
 
     val totalBuyInsAndRebuys: Int
         get() = players.sumOf { 1 + it.rebuyCount }

@@ -44,6 +44,17 @@ final class SoundPlayer {
         feedback.notificationOccurred(.warning)
     }
 
+    func playMinuteWarning() {
+        AudioServicesPlaySystemSound(SystemSoundID(1110))
+        let generator = UIImpactFeedbackGenerator(style: .light)
+        generator.impactOccurred()
+    }
+
+    func playFinalCountdownWarning() {
+        AudioServicesPlaySystemSound(SystemSoundID(1013))
+        feedback.notificationOccurred(.warning)
+    }
+
     func playCountdownTick() {
         AudioServicesPlaySystemSound(SystemSoundID(1104)) // key click
     }

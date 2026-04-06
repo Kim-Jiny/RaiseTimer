@@ -4,7 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.jiny.raisetimer.ui.RaiseTimerApp
+import com.jiny.raisetimer.ui.TournamentViewModel
 import com.jiny.raisetimer.ui.theme.RaiseTimerTheme
 
 class MainActivity : ComponentActivity() {
@@ -12,8 +15,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            RaiseTimerTheme {
-                RaiseTimerApp()
+            val tournamentViewModel: TournamentViewModel = viewModel()
+            val state = tournamentViewModel.state.collectAsStateWithLifecycle()
+            RaiseTimerTheme(themePreset = state.value.config.themePreset) {
+                RaiseTimerApp(viewModel = tournamentViewModel)
             }
         }
     }

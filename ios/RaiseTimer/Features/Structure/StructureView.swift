@@ -2,9 +2,11 @@ import SwiftUI
 
 struct StructureView: View {
     @Environment(TournamentStore.self) private var store
+    @State private var presetName = ""
 
     var body: some View {
         let state = store.state
+        let totalMinutes = state.config.levels.reduce(0) { $0 + $1.durationSeconds } / 60
         NavigationStack {
             Form {
                 Section("토너먼트 설정") {
@@ -35,12 +37,53 @@ struct StructureView: View {
                     ))
                 }
 
+                Section {
+                    LabeledContent("레벨 수", value: "\(state.config.levels.count)개")
+                    LabeledContent("예상 진행", value: "\(totalMinutes)분")
+                }
+
+                Section("설정 저장") {
+                    TextField("설정 이름", text: $presetName)
+                    Button("현재 설정 저장") {
+                        store.saveCurrentBlindStructure(name: presetName)
+                        presetName = ""
+                    }
+                    .disabled(presetName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
+                    if state.config.savedBlindStructures.isEmpty {
+                        Text("저장된 설정이 없습니다.")
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(state.config.savedBlindStructures.reversed()) { preset in
+                            VStack(alignment: .leading, spacing: 10) {
+                                Text(preset.name)
+                                    .font(.headline)
+                                Text("\(preset.levels.count)개 레벨 · \(preset.payoutPercents.count)명 분배")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                                HStack {
+                                    Button("불러오기") {
+                                        store.loadBlindStructure(id: preset.id)
+                                    }
+                                    .buttonStyle(.borderedProminent)
+
+                                    Button("삭제", role: .destructive) {
+                                        store.deleteBlindStructure(id: preset.id)
+                                    }
+                                    .buttonStyle(.bordered)
+                                }
+                            }
+                            .padding(.vertical, 4)
+                        }
+                    }
+                }
+
                 Section("블라인드 레벨") {
                     ForEach(Array(state.config.levels.enumerated()), id: \.element.id) { index, level in
                         LevelEditor(index: index, level: level)
                     }
                     .onDelete { indexSet in
-                        indexSet.forEach { store.removeLevel(at: $0) }
+                        indexSet.sorted(by: >).forEach { store.removeLevel(at: $0) }
                     }
 
                     Button {
@@ -52,6 +95,7 @@ struct StructureView: View {
             }
             .scrollContentBackground(.hidden)
             .background(RTTheme.feltGreenDark)
+            .dismissKeyboardOnTap()
             .navigationTitle("블라인드 구조")
             .toolbarColorScheme(.dark, for: .navigationBar)
         }

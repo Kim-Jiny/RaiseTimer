@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.weight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
@@ -15,14 +16,19 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -32,14 +38,18 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.jiny.raisetimer.domain.model.BlindLevel
 import com.jiny.raisetimer.ui.TournamentViewModel
+import com.jiny.raisetimer.ui.clearFocusOnTap
 
 @Composable
 fun StructureScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val totalMinutes = state.config.levels.sumOf { it.durationSeconds } / 60
+    var presetName by rememberSaveable { mutableStateOf("") }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .clearFocusOnTap()
             .padding(contentPadding)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -48,6 +58,11 @@ fun StructureScreen(viewModel: TournamentViewModel, contentPadding: PaddingValue
             text = "블라인드 구조",
             style = MaterialTheme.typography.titleLarge,
             color = MaterialTheme.colorScheme.onBackground,
+        )
+        Text(
+            text = "총 ${state.config.levels.size}개 레벨 · 예정 ${totalMinutes}분",
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            style = MaterialTheme.typography.bodyMedium,
         )
 
         Card(
@@ -98,11 +113,93 @@ fun StructureScreen(viewModel: TournamentViewModel, contentPadding: PaddingValue
             }
         }
 
+        Card(
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+            ) {
+                Text("블라인드 설정 저장", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(
+                    text = "현재 스택, 바이인, 블라인드, 앤티, 상금 비율을 한 번에 저장합니다.",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    style = MaterialTheme.typography.bodyMedium,
+                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    OutlinedTextField(
+                        value = presetName,
+                        onValueChange = { presetName = it },
+                        label = { Text("설정 이름") },
+                        singleLine = true,
+                        modifier = Modifier.weight(1f),
+                    )
+                    Button(
+                        onClick = {
+                            viewModel.saveCurrentBlindStructure(presetName)
+                            presetName = ""
+                        },
+                        enabled = presetName.isNotBlank(),
+                    ) {
+                        Text("저장")
+                    }
+                }
+
+                if (state.config.savedBlindStructures.isEmpty()) {
+                    Text(
+                        text = "저장된 설정이 없습니다.",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium,
+                    )
+                } else {
+                    state.config.savedBlindStructures.reversed().forEach { preset ->
+                        Card(
+                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 12.dp, vertical = 10.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            ) {
+                                Column(modifier = Modifier.weight(1f)) {
+                                    Text(preset.name, fontWeight = FontWeight.Bold)
+                                    Text(
+                                        text = "${preset.levels.size}개 레벨 · ${preset.payoutPercents.size}명 분배",
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        style = MaterialTheme.typography.bodySmall,
+                                    )
+                                }
+                                OutlinedButton(onClick = { viewModel.loadBlindStructure(preset.id) }) {
+                                    Text("불러오기")
+                                }
+                                IconButton(
+                                    onClick = { viewModel.deleteBlindStructure(preset.id) },
+                                    colors = IconButtonDefaults.iconButtonColors(
+                                        contentColor = MaterialTheme.colorScheme.error
+                                    ),
+                                ) {
+                                    Icon(Icons.Filled.Delete, contentDescription = "설정 삭제")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         LazyColumn(
             modifier = Modifier.weight(1f),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
-            itemsIndexed(state.config.levels, key = { index, _ -> index }) { index, level ->
+            itemsIndexed(state.config.levels, key = { _, level -> level.id }) { index, level ->
                 LevelCard(
                     index = index,
                     level = level,
@@ -203,6 +300,7 @@ private fun NumberField(
             onValueChange(parsed)
         },
         label = { Text(label) },
+        placeholder = { Text("0") },
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         singleLine = true,
         modifier = modifier.fillMaxWidth(),

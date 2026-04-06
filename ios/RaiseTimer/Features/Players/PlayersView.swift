@@ -3,10 +3,13 @@ import SwiftUI
 struct PlayersView: View {
     @Environment(TournamentStore.self) private var store
     @State private var newName: String = ""
+    @FocusState private var isNameFieldFocused: Bool
 
     var body: some View {
         let state = store.state
         let rebuyAllowed = state.config.rebuyAllowed
+        let canAddPlayer = !newName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        let payouts = PayoutCalculator.calculate(state)
         NavigationStack {
             ZStack {
                 RTTheme.feltGreenDark.ignoresSafeArea()
@@ -17,17 +20,50 @@ struct PlayersView: View {
                     }
                     .padding(.horizontal)
 
+                    if state.isTournamentComplete {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("게임 종료 요약")
+                                .font(.headline)
+                                .foregroundStyle(.white)
+                            Text("우승 \(state.winner?.name ?? "미정")")
+                                .fontWeight(.bold)
+                                .foregroundStyle(RTTheme.chipGold)
+                            ForEach(state.finalStandings.prefix(3), id: \.id) { player in
+                                let amount = player.placement.flatMap { place in
+                                    payouts.indices.contains(place - 1) ? payouts[place - 1].amount : 0
+                                } ?? 0
+                                Text("\(player.placement ?? 0)위 \(player.name) · \(formattedAmount(amount))원")
+                                    .font(.caption)
+                                    .foregroundStyle(RTTheme.onSurfaceMuted)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding()
+                        .background(RTTheme.surfaceHighlight, in: RoundedRectangle(cornerRadius: 18))
+                        .padding(.horizontal)
+                    }
+
                     HStack {
                         TextField("이름 입력", text: $newName)
                             .textFieldStyle(.roundedBorder)
+                            .submitLabel(.done)
+                            .focused($isNameFieldFocused)
+                            .onSubmit {
+                                guard canAddPlayer else { return }
+                                store.addPlayer(name: newName)
+                                newName = ""
+                                isNameFieldFocused = false
+                            }
                         Button {
                             store.addPlayer(name: newName)
                             newName = ""
+                            isNameFieldFocused = false
                         } label: {
                             Image(systemName: "plus.circle.fill")
                                 .font(.title2)
                         }
                         .tint(RTTheme.chipGold)
+                        .disabled(!canAddPlayer)
                     }
                     .padding(.horizontal)
 
@@ -50,14 +86,14 @@ struct PlayersView: View {
                                 )
                         }
                         .onDelete { indexSet in
-                            indexSet.forEach { idx in
-                                store.removePlayer(id: state.players[idx].id)
-                            }
+                            let idsToRemove = indexSet.map { state.players[$0].id }
+                            idsToRemove.forEach { store.removePlayer(id: $0) }
                         }
                     }
                     .scrollContentBackground(.hidden)
                 }
             }
+            .dismissKeyboardOnTap()
             .navigationTitle("참가자 \(state.activePlayers.count)/\(state.players.count)")
             .toolbarColorScheme(.dark, for: .navigationBar)
         }
@@ -117,6 +153,7 @@ private struct PlayerRow: View {
                         store.adjustRebuy(id: player.id, delta: -1)
                     } label: { Image(systemName: "minus.circle") }
                         .buttonStyle(.borderless)
+                        .disabled(player.rebuyCount == 0)
                     Text("\(player.rebuyCount)")
                         .foregroundStyle(.white)
                         .frame(minWidth: 16)

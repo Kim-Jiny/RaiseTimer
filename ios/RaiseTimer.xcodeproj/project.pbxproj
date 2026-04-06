@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		009E20A4E109B451D593F99C /* TimerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224B4CBEC42C6685EBB65E52 /* TimerEngine.swift */; };
+		14D0E8147A8D4C3A9B4E1F10 /* LogoStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 14D0E8137A8D4C3A9B4E1F10 /* LogoStore.swift */; };
+		2A6F77B1D34F4F099B934D7F /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2A6F77B0D34F4F099B934D7F /* SettingsView.swift */; };
 		62061466FA9035E4F97873A2 /* SoundPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3A8064A2FE4CE3EBD95F77D2 /* SoundPlayer.swift */; };
 		68352189455FCFE77340B681 /* StructureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6C2570570CB1B249EEA56A3C /* StructureView.swift */; };
 		73A618FDBF09A5FD5D9FD635 /* PayoutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D300060B479BBBDD7F92414 /* PayoutView.swift */; };
@@ -22,6 +24,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		14D0E8137A8D4C3A9B4E1F10 /* LogoStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoStore.swift; sourceTree = "<group>"; };
+		2A6F77B0D34F4F099B934D7F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		224B4CBEC42C6685EBB65E52 /* TimerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerEngine.swift; sourceTree = "<group>"; };
 		3A8064A2FE4CE3EBD95F77D2 /* SoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundPlayer.swift; sourceTree = "<group>"; };
 		4D300060B479BBBDD7F92414 /* PayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayoutView.swift; sourceTree = "<group>"; };
@@ -38,6 +42,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		0AB4AB2FF2444593B8229542 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				2A6F77B0D34F4F099B934D7F /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
 		4A6C045AB398288E4C800779 /* Payout */ = {
 			isa = PBXGroup;
 			children = (
@@ -51,6 +63,7 @@
 			children = (
 				4A6C045AB398288E4C800779 /* Payout */,
 				B183777A15E5D64C7C75E744 /* Players */,
+				0AB4AB2FF2444593B8229542 /* Settings */,
 				AD82C0E8D69FC3233635F9DF /* Structure */,
 				FE368D23115541ABE4DE5D8A /* Timer */,
 			);
@@ -115,6 +128,7 @@
 		FC01B4C9EEB0E6C1AC65BCFE /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				14D0E8137A8D4C3A9B4E1F10 /* LogoStore.swift */,
 				3A8064A2FE4CE3EBD95F77D2 /* SoundPlayer.swift */,
 				8F20C8ABB641D9482DBC622E /* TournamentStore.swift */,
 			);
@@ -194,6 +208,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				14D0E8147A8D4C3A9B4E1F10 /* LogoStore.swift in Sources */,
+				2A6F77B1D34F4F099B934D7F /* SettingsView.swift in Sources */,
 				99A801CC03629CE917A830F3 /* ContentView.swift in Sources */,
 				BB28BBF6FCE486DDA10BB98E /* Models.swift in Sources */,
 				AFFAF5A4BA353D9F4A795429 /* PayoutCalculator.swift in Sources */,

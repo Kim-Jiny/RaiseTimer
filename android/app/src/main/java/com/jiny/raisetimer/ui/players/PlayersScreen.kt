@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -25,6 +26,8 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,10 +36,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jiny.raisetimer.domain.PayoutCalculator
 import com.jiny.raisetimer.domain.model.Player
+import com.jiny.raisetimer.ui.clearFocusOnTap
 import com.jiny.raisetimer.ui.TournamentViewModel
 import com.jiny.raisetimer.ui.theme.SurfaceElevated
 import com.jiny.raisetimer.ui.theme.SurfaceHighlight
@@ -44,12 +51,16 @@ import com.jiny.raisetimer.ui.theme.SurfaceHighlight
 @Composable
 fun PlayersScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val payouts = PayoutCalculator.calculate(state)
     var newName by remember { mutableStateOf("") }
     val rebuyAllowed = state.config.rebuyAllowed
+    val canAddPlayer = newName.trim().isNotEmpty()
+    val focusManager = LocalFocusManager.current
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .clearFocusOnTap()
             .padding(contentPadding)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -102,6 +113,33 @@ fun PlayersScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues)
             }
         }
 
+        if (state.isTournamentComplete) {
+            Surface(
+                color = SurfaceHighlight,
+                shape = MaterialTheme.shapes.large,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    Text("게임 종료 요약", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                    Text(
+                        text = "우승 ${state.winner?.name ?: "미정"}",
+                        color = MaterialTheme.colorScheme.primary,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    state.finalStandings.take(3).forEach { player ->
+                        val amount = player.placement?.let { payouts.getOrNull(it - 1)?.amount } ?: 0
+                        Text(
+                            text = "${player.placement ?: "-"}위 ${player.name} · ${"%,d".format(amount)}원",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        )
+                    }
+                }
+            }
+        }
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -112,12 +150,26 @@ fun PlayersScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues)
                 onValueChange = { newName = it },
                 placeholder = { Text("이름 입력") },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions(
+                    onDone = {
+                        if (canAddPlayer) {
+                            viewModel.addPlayer(newName)
+                            newName = ""
+                            focusManager.clearFocus(force = true)
+                        }
+                    }
+                ),
                 modifier = Modifier.weight(1f),
             )
-            Button(onClick = {
-                viewModel.addPlayer(newName)
-                newName = ""
-            }) {
+            Button(
+                onClick = {
+                    viewModel.addPlayer(newName)
+                    newName = ""
+                    focusManager.clearFocus(force = true)
+                },
+                enabled = canAddPlayer,
+            ) {
                 Icon(Icons.Filled.Add, contentDescription = null)
             }
         }
@@ -215,7 +267,10 @@ private fun PlayerRow(
 
             if (rebuyAllowed) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    TextButton(onClick = onRebuyMinus) { Text("-") }
+                    TextButton(
+                        onClick = onRebuyMinus,
+                        enabled = player.rebuyCount > 0,
+                    ) { Text("-") }
                     Text("${player.rebuyCount}", color = MaterialTheme.colorScheme.onSurface)
                     TextButton(onClick = onRebuyPlus) { Text("+") }
                 }

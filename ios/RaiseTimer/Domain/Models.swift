@@ -1,5 +1,31 @@
 import Foundation
 
+enum ThemePreset: String, Codable, CaseIterable, Hashable {
+    case emerald
+    case ocean
+    case ruby
+    case sunset
+    case lavender
+    case slate
+    case mint
+    case coral
+    case midnight
+
+    var title: String {
+        switch self {
+        case .emerald: return "Emerald"
+        case .ocean: return "Ocean"
+        case .ruby: return "Ruby"
+        case .sunset: return "Sunset"
+        case .lavender: return "Lavender"
+        case .slate: return "Slate"
+        case .mint: return "Mint"
+        case .coral: return "Coral"
+        case .midnight: return "Midnight"
+        }
+    }
+}
+
 struct BlindLevel: Codable, Identifiable, Hashable {
     var id: UUID = UUID()
     var level: Int
@@ -47,6 +73,50 @@ struct Player: Codable, Identifiable, Hashable {
     var placement: Int?
 }
 
+struct BlindStructurePreset: Codable, Identifiable, Hashable {
+    var id: UUID = UUID()
+    var name: String
+    var startingStack: Int
+    var buyInAmount: Int
+    var feePerEntry: Int
+    var rebuyAllowed: Bool
+    var levels: [BlindLevel]
+    var payoutPercents: [Int]
+}
+
+struct TournamentSlotSnapshot: Codable, Identifiable, Hashable {
+    var id: UUID = UUID()
+    var name: String
+    var updatedAt: Date
+    var state: TournamentState
+}
+
+struct TournamentAppStorage: Codable, Hashable {
+    var currentTournamentID: UUID
+    var tournaments: [TournamentSlotSnapshot]
+
+    static func `default`() -> TournamentAppStorage {
+        let slot = TournamentSlotSnapshot(
+            name: "기본 토너먼트",
+            updatedAt: Date(),
+            state: TournamentState()
+        )
+        return TournamentAppStorage(
+            currentTournamentID: slot.id,
+            tournaments: [slot]
+        )
+    }
+}
+
+struct TournamentSlotSummary: Identifiable, Hashable {
+    let id: UUID
+    let name: String
+    let updatedAt: Date
+    let playerCount: Int
+    let activePlayerCount: Int
+    let isCurrent: Bool
+}
+
 struct TournamentConfig: Codable, Hashable {
     var startingStack: Int = 10_000
     var buyInAmount: Int = 50_000
@@ -55,6 +125,39 @@ struct TournamentConfig: Codable, Hashable {
     var rebuyAllowed: Bool = true
     var levels: [BlindLevel] = TournamentConfig.defaultBlindStructure()
     var payoutPercents: [Int] = [50, 30, 20]
+    var themePreset: ThemePreset = .emerald
+    var fullscreenLogoFileName: String? = nil
+    var fullscreenLogoBase64: String? = nil
+    var savedBlindStructures: [BlindStructurePreset] = []
+
+    enum CodingKeys: String, CodingKey {
+        case startingStack
+        case buyInAmount
+        case feePerEntry
+        case rebuyAllowed
+        case levels
+        case payoutPercents
+        case themePreset
+        case fullscreenLogoFileName
+        case fullscreenLogoBase64
+        case savedBlindStructures
+    }
+
+    init() {}
+
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        startingStack = try container.decodeIfPresent(Int.self, forKey: .startingStack) ?? 10_000
+        buyInAmount = try container.decodeIfPresent(Int.self, forKey: .buyInAmount) ?? 50_000
+        feePerEntry = try container.decodeIfPresent(Int.self, forKey: .feePerEntry) ?? 0
+        rebuyAllowed = try container.decodeIfPresent(Bool.self, forKey: .rebuyAllowed) ?? true
+        levels = try container.decodeIfPresent([BlindLevel].self, forKey: .levels) ?? TournamentConfig.defaultBlindStructure()
+        payoutPercents = try container.decodeIfPresent([Int].self, forKey: .payoutPercents) ?? [50, 30, 20]
+        themePreset = try container.decodeIfPresent(ThemePreset.self, forKey: .themePreset) ?? .emerald
+        fullscreenLogoFileName = try container.decodeIfPresent(String.self, forKey: .fullscreenLogoFileName)
+        fullscreenLogoBase64 = try container.decodeIfPresent(String.self, forKey: .fullscreenLogoBase64)
+        savedBlindStructures = try container.decodeIfPresent([BlindStructurePreset].self, forKey: .savedBlindStructures) ?? []
+    }
 
     static func defaultBlindStructure() -> [BlindLevel] {
         [
@@ -93,17 +196,38 @@ struct TournamentState: Codable, Hashable {
     }
 
     var currentLevel: BlindLevel {
+        guard !config.levels.isEmpty else {
+            return BlindLevel(level: 1, smallBlind: 0, bigBlind: 0, durationSeconds: 0)
+        }
         let clamped = max(0, min(currentLevelIndex, config.levels.count - 1))
         return config.levels[clamped]
     }
 
     var nextLevel: BlindLevel? {
+        guard !config.levels.isEmpty else { return nil }
         let next = currentLevelIndex + 1
         return next < config.levels.count ? config.levels[next] : nil
     }
 
     var activePlayers: [Player] {
         players.filter { !$0.isEliminated }
+    }
+
+    var isTournamentComplete: Bool {
+        !players.isEmpty && activePlayers.count <= 1
+    }
+
+    var winner: Player? {
+        players.first(where: { $0.placement == 1 }) ?? activePlayers.only
+    }
+
+    var finalStandings: [Player] {
+        players.sorted {
+            let lhs = $0.placement ?? Int.max
+            let rhs = $1.placement ?? Int.max
+            if lhs == rhs { return $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }
+            return lhs < rhs
+        }
     }
 
     var totalBuyInsAndRebuys: Int {
@@ -124,4 +248,8 @@ struct TournamentState: Codable, Hashable {
     var totalPrizePool: Int {
         max(0, totalBuyInsGross - totalFee)
     }
+}
+
+private extension Array {
+    var only: Element? { count == 1 ? first : nil }
 }

@@ -6,10 +6,16 @@ import androidx.lifecycle.viewModelScope
 import com.jiny.raisetimer.data.TournamentRepository
 import com.jiny.raisetimer.domain.TimerEngine
 import com.jiny.raisetimer.domain.model.BlindLevel
+import com.jiny.raisetimer.domain.model.BlindStructurePreset
 import com.jiny.raisetimer.domain.model.Player
+import com.jiny.raisetimer.domain.model.ThemePreset
+import com.jiny.raisetimer.domain.model.TournamentAppStorage
 import com.jiny.raisetimer.domain.model.TournamentConfig
+import com.jiny.raisetimer.domain.model.TournamentSlotSnapshot
+import com.jiny.raisetimer.domain.model.TournamentSlotSummary
 import com.jiny.raisetimer.domain.model.TournamentState
 import com.jiny.raisetimer.sound.SoundPlayer
+import com.jiny.raisetimer.ui.LogoStorage
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +23,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 /**
  * Single source of truth for the tournament. All four screens subscribe to [state].
@@ -28,6 +35,11 @@ class TournamentViewModel(app: Application) : AndroidViewModel(app) {
 
     private val _state = MutableStateFlow(TournamentState())
     val state: StateFlow<TournamentState> = _state.asStateFlow()
+    private val _slotSummaries = MutableStateFlow<List<TournamentSlotSummary>>(emptyList())
+    val slotSummaries: StateFlow<List<TournamentSlotSummary>> = _slotSummaries.asStateFlow()
+    private val _currentTournamentName = MutableStateFlow("기본 토너먼트")
+    val currentTournamentName: StateFlow<String> = _currentTournamentName.asStateFlow()
+    private var appStorage = TournamentAppStorage.default()
 
     private var tickJob: Job? = null
     private var restoredInitialState = false
@@ -35,9 +47,20 @@ class TournamentViewModel(app: Application) : AndroidViewModel(app) {
 
     init {
         viewModelScope.launch {
-            val restored = repository.stateFlow.first()
+            val restoredStorage = repository.storageFlow.first()
+            appStorage = restoredStorage
+            publishSlotMetadata()
+            val restored = restoredStorage.tournaments
+                .firstOrNull { it.id == restoredStorage.currentTournamentId }
+                ?.state
+                ?: TournamentState()
             if (!localChangesBeforeRestore) {
-                val normalized = normalizePlayerPlacements(restored)
+                val migratedConfig = migrateLegacyLogo(restored.config)
+                val normalized = normalizePlayerPlacements(restored.copy(config = migratedConfig))
+                if (migratedConfig != restored.config) {
+                    _state.value = normalized
+                    persist()
+                }
                 if (normalized.isRunning && normalized.lastTickAt != null) {
                     // Catch up any wall-clock time that passed while the process was dead.
                     val result = TimerEngine.catchUp(normalized, System.currentTimeMillis())
@@ -48,6 +71,7 @@ class TournamentViewModel(app: Application) : AndroidViewModel(app) {
                 } else {
                     _state.value = normalized.copy(isRunning = false, lastTickAt = null)
                 }
+                publishSlotMetadata()
             }
             restoredInitialState = true
         }
@@ -95,13 +119,21 @@ class TournamentViewModel(app: Application) : AndroidViewModel(app) {
                 delay(1_000)
                 val result = TimerEngine.catchUp(_state.value, System.currentTimeMillis())
                 val prevRemaining = _state.value.remainingSeconds
+                val previousLevelIndex = _state.value.currentLevelIndex
                 _state.value = result.state
                 // Countdown beep only fires on a smooth 1-second foreground tick.
-                if (!result.levelAdvanced &&
-                    result.state.remainingSeconds in 1..5 &&
-                    result.state.remainingSeconds < prevRemaining
-                ) {
-                    soundPlayer.playCountdownTick()
+                if (!result.levelAdvanced && result.state.currentLevelIndex == previousLevelIndex) {
+                    if (prevRemaining > 60 && result.state.remainingSeconds <= 60) {
+                        soundPlayer.playMinuteWarning()
+                    }
+                    if (prevRemaining > 10 && result.state.remainingSeconds <= 10) {
+                        soundPlayer.playFinalCountdownWarning()
+                    }
+                    if (result.state.remainingSeconds in 1..5 &&
+                        result.state.remainingSeconds < prevRemaining
+                    ) {
+                        soundPlayer.playCountdownTick()
+                    }
                 }
                 if (result.levelAdvanced) {
                     soundPlayer.playLevelChange()
@@ -113,14 +145,14 @@ class TournamentViewModel(app: Application) : AndroidViewModel(app) {
     }
 
     fun pause() {
-        tickJob?.cancel()
+        stopTicker()
         markLocalMutation()
         _state.value = TimerEngine.pause(_state.value)
         persist()
     }
 
     fun reset() {
-        tickJob?.cancel()
+        stopTicker()
         markLocalMutation()
         _state.value = TimerEngine.reset(_state.value)
         persist()
@@ -258,8 +290,160 @@ class TournamentViewModel(app: Application) : AndroidViewModel(app) {
         updateConfig { it.copy(payoutPercents = percents) }
     }
 
+    fun saveCurrentBlindStructure(name: String) {
+        val trimmed = name.trim()
+        if (trimmed.isEmpty()) return
+        updateConfig { config ->
+            val preset = BlindStructurePreset(
+                id = UUID.randomUUID().toString(),
+                name = trimmed,
+                startingStack = config.startingStack,
+                buyInAmount = config.buyInAmount,
+                feePerEntry = config.feePerEntry,
+                rebuyAllowed = config.rebuyAllowed,
+                levels = config.levels.mapIndexed { index, level ->
+                    level.copy(
+                        id = UUID.randomUUID().toString(),
+                        level = index + 1,
+                    )
+                },
+                payoutPercents = config.payoutPercents.toList(),
+            )
+            config.copy(savedBlindStructures = config.savedBlindStructures + preset)
+        }
+    }
+
+    fun loadBlindStructure(presetId: String) {
+        val preset = _state.value.config.savedBlindStructures.firstOrNull { it.id == presetId } ?: return
+        stopTicker()
+        markLocalMutation()
+        _state.value = _state.value.copy(
+            config = _state.value.config.copy(
+                startingStack = preset.startingStack,
+                buyInAmount = preset.buyInAmount,
+                feePerEntry = preset.feePerEntry,
+                rebuyAllowed = preset.rebuyAllowed,
+                levels = preset.levels.mapIndexed { index, level ->
+                    level.copy(
+                        id = UUID.randomUUID().toString(),
+                        level = index + 1,
+                    )
+                },
+                payoutPercents = preset.payoutPercents.toList(),
+            ),
+            currentLevelIndex = 0,
+            remainingSeconds = preset.levels.firstOrNull()?.durationSeconds ?: 0,
+            isRunning = false,
+            lastTickAt = null,
+        )
+        persist()
+    }
+
+    fun deleteBlindStructure(presetId: String) {
+        updateConfig { config ->
+            config.copy(
+                savedBlindStructures = config.savedBlindStructures.filterNot { it.id == presetId }
+            )
+        }
+    }
+
+    fun createTournamentSlot(name: String) {
+        val trimmed = name.trim()
+        if (trimmed.isEmpty()) return
+        markLocalMutation()
+        val config = _state.value.config
+        val newState = TournamentState(
+            config = TournamentConfig(
+                themePreset = config.themePreset,
+                fullscreenLogoFileName = config.fullscreenLogoFileName,
+                savedBlindStructures = config.savedBlindStructures,
+            )
+        )
+        val snapshot = TournamentSlotSnapshot(
+            name = trimmed,
+            updatedAt = System.currentTimeMillis(),
+            state = newState,
+        )
+        appStorage = appStorage.copy(
+            currentTournamentId = snapshot.id,
+            tournaments = appStorage.tournaments + snapshot,
+        )
+        _state.value = newState
+        stopTicker()
+        persist()
+    }
+
+    fun switchTournamentSlot(slotId: String) {
+        if (slotId == appStorage.currentTournamentId) return
+        val target = appStorage.tournaments.firstOrNull { it.id == slotId } ?: return
+        stopTicker()
+        val updatedCurrent = currentSlotSnapshot()
+        appStorage = appStorage.copy(
+            currentTournamentId = slotId,
+            tournaments = appStorage.tournaments.map { snapshot ->
+                when (snapshot.id) {
+                    updatedCurrent.id -> updatedCurrent
+                    else -> snapshot
+                }
+            }
+        )
+        val migratedConfig = migrateLegacyLogo(target.state.config)
+        _state.value = normalizePlayerPlacements(
+            target.state.copy(config = migratedConfig, isRunning = false, lastTickAt = null)
+        )
+        persist()
+    }
+
+    fun deleteTournamentSlot(slotId: String) {
+        if (appStorage.tournaments.size <= 1) return
+        val remaining = appStorage.tournaments.filterNot { it.id == slotId }
+        if (slotId == appStorage.currentTournamentId) {
+            stopTicker()
+            val fallback = remaining.first()
+            val migratedConfig = migrateLegacyLogo(fallback.state.config)
+            appStorage = appStorage.copy(
+                currentTournamentId = fallback.id,
+                tournaments = remaining,
+            )
+            _state.value = normalizePlayerPlacements(
+                fallback.state.copy(config = migratedConfig, isRunning = false, lastTickAt = null)
+            )
+        } else {
+            appStorage = appStorage.copy(tournaments = remaining)
+        }
+        persist()
+    }
+
+    fun updateThemePreset(themePreset: ThemePreset) {
+        updateConfig { it.copy(themePreset = themePreset) }
+    }
+
+    fun updateFullscreenLogoFileName(fileName: String?) {
+        val previousFileName = _state.value.config.fullscreenLogoFileName
+        if (previousFileName != null && previousFileName != fileName) {
+            LogoStorage.delete(getApplication(), previousFileName)
+        }
+        updateConfig {
+            it.copy(
+                fullscreenLogoFileName = fileName,
+                fullscreenLogoBase64 = null,
+            )
+        }
+    }
+
     private fun persist() {
-        viewModelScope.launch { repository.save(_state.value) }
+        appStorage = appStorage.copy(
+            tournaments = appStorage.tournaments
+                .map { snapshot -> if (snapshot.id == appStorage.currentTournamentId) currentSlotSnapshot() else snapshot }
+                .ifEmpty { listOf(currentSlotSnapshot()) }
+        )
+        publishSlotMetadata()
+        viewModelScope.launch { repository.save(appStorage) }
+    }
+
+    private fun stopTicker() {
+        tickJob?.cancel()
+        tickJob = null
     }
 
     private fun markLocalMutation() {
@@ -268,14 +452,26 @@ class TournamentViewModel(app: Application) : AndroidViewModel(app) {
 
     private fun normalizePlayerPlacements(state: TournamentState): TournamentState {
         val activeCount = state.players.count { !it.isEliminated }
-        val maxPlacement = state.players.mapNotNull { it.placement }.maxOrNull() ?: activeCount
-        var nextPlacement = maxPlacement + 1
+        var nextPlacement = activeCount + 1
+
+        val existingPlacements = state.players
+            .filter { it.isEliminated && it.placement != null }
+            .mapTo(mutableSetOf()) { it.placement!! }
+
         val placementsById = mutableMapOf<String, Int>()
 
         state.players.forEach { player ->
             if (player.isEliminated) {
-                val placement = player.placement ?: nextPlacement++
-                placementsById[player.id] = placement
+                if (player.placement != null) {
+                    placementsById[player.id] = player.placement
+                } else {
+                    while (nextPlacement in existingPlacements) {
+                        nextPlacement++
+                    }
+                    placementsById[player.id] = nextPlacement
+                    existingPlacements.add(nextPlacement)
+                    nextPlacement++
+                }
             }
         }
 
@@ -283,6 +479,8 @@ class TournamentViewModel(app: Application) : AndroidViewModel(app) {
             players = state.players.map { player ->
                 if (player.isEliminated) {
                     player.copy(placement = placementsById[player.id])
+                } else if (activeCount == 1) {
+                    player.copy(placement = 1)
                 } else {
                     player.copy(placement = null)
                 }
@@ -293,9 +491,44 @@ class TournamentViewModel(app: Application) : AndroidViewModel(app) {
     private fun renumberLevels(levels: List<BlindLevel>): List<BlindLevel> =
         levels.mapIndexed { index, level -> level.copy(level = index + 1) }
 
+    private fun currentSlotSnapshot(): TournamentSlotSnapshot {
+        val existing = appStorage.tournaments.firstOrNull { it.id == appStorage.currentTournamentId }
+        return TournamentSlotSnapshot(
+            id = existing?.id ?: UUID.randomUUID().toString(),
+            name = existing?.name ?: _currentTournamentName.value,
+            updatedAt = System.currentTimeMillis(),
+            state = _state.value,
+        )
+    }
+
+    private fun publishSlotMetadata() {
+        _currentTournamentName.value =
+            appStorage.tournaments.firstOrNull { it.id == appStorage.currentTournamentId }?.name
+                ?: "기본 토너먼트"
+        _slotSummaries.value = appStorage.tournaments.map { snapshot ->
+            TournamentSlotSummary(
+                id = snapshot.id,
+                name = snapshot.name,
+                updatedAt = snapshot.updatedAt,
+                playerCount = snapshot.state.players.size,
+                activePlayerCount = snapshot.state.activePlayers.size,
+                isCurrent = snapshot.id == appStorage.currentTournamentId,
+            )
+        }.sortedByDescending { it.updatedAt }
+    }
+
+    private fun migrateLegacyLogo(config: TournamentConfig): TournamentConfig {
+        if (config.fullscreenLogoFileName != null || config.fullscreenLogoBase64 == null) return config
+        val fileName = LogoStorage.migrateLegacyBase64(getApplication(), config.fullscreenLogoBase64)
+        return config.copy(
+            fullscreenLogoFileName = fileName,
+            fullscreenLogoBase64 = null,
+        )
+    }
+
     override fun onCleared() {
         super.onCleared()
-        tickJob?.cancel()
+        stopTicker()
         soundPlayer.release()
     }
 }

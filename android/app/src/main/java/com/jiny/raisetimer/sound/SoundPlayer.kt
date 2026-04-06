@@ -57,6 +57,16 @@ class SoundPlayer(context: Context) {
         vibrate(longArrayOf(0, 200, 100, 200))
     }
 
+    fun playMinuteWarning() {
+        toneGenerator?.startTone(ToneGenerator.TONE_CDMA_ALERT_CALL_GUARD, 350)
+        vibrate(longArrayOf(0, 120))
+    }
+
+    fun playFinalCountdownWarning() {
+        toneGenerator?.startTone(ToneGenerator.TONE_CDMA_ONE_MIN_BEEP, 700)
+        vibrate(longArrayOf(0, 150, 80, 150, 80, 220))
+    }
+
     fun playCountdownTick() {
         toneGenerator?.startTone(ToneGenerator.TONE_PROP_BEEP, 100)
     }

@@ -1,8 +1,20 @@
 import SwiftUI
 import UIKit
 
+final class AppDelegate: NSObject, UIApplicationDelegate {
+    static var orientationLock: UIInterfaceOrientationMask = .portrait
+
+    func application(
+        _ application: UIApplication,
+        supportedInterfaceOrientationsFor window: UIWindow?
+    ) -> UIInterfaceOrientationMask {
+        Self.orientationLock
+    }
+}
+
 @main
 struct RaiseTimerApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var store = TournamentStore()
     @Environment(\.scenePhase) private var scenePhase
 
@@ -10,7 +22,6 @@ struct RaiseTimerApp: App {
         WindowGroup {
             ContentView()
                 .environment(store)
-                .preferredColorScheme(.dark)
                 .onAppear {
                     // Apply initial screen-awake state (e.g. when restoring a running
                     // tournament across a cold launch).

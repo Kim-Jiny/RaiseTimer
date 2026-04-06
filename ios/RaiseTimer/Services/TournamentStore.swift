@@ -5,22 +5,45 @@ import Observation
 @Observable
 final class TournamentStore {
     private(set) var state: TournamentState
+    private(set) var tournamentSlots: [TournamentSlotSummary] = []
+    private(set) var currentTournamentID: UUID
+    private(set) var currentTournamentName: String
 
+    private var storage: TournamentAppStorage
     private var timerTask: Task<Void, Never>?
     private let soundPlayer = SoundPlayer()
-    private let storageKey = "raise_timer.state.v1"
+    private static let storageKey = "raise_timer.state.v1"
 
     init() {
-        if let data = UserDefaults.standard.data(forKey: storageKey),
-           let decoded = try? JSONDecoder().decode(TournamentState.self, from: data) {
-            self.state = decoded
-        } else {
-            self.state = TournamentState()
-        }
-        // All stored properties initialized — safe to call instance methods.
+        let loadedStorage: TournamentAppStorage = {
+            guard let data = UserDefaults.standard.data(forKey: Self.storageKey) else {
+                return .default()
+            }
+            if let decoded = try? JSONDecoder().decode(TournamentAppStorage.self, from: data) {
+                return decoded
+            }
+            if let legacy = try? JSONDecoder().decode(TournamentState.self, from: data) {
+                let slot = TournamentSlotSnapshot(
+                    name: "기본 토너먼트",
+                    updatedAt: Date(),
+                    state: legacy
+                )
+                return TournamentAppStorage(currentTournamentID: slot.id, tournaments: [slot])
+            }
+            return .default()
+        }()
+
+        self.storage = loadedStorage
+        let currentSlot = loadedStorage.tournaments.first(where: { $0.id == loadedStorage.currentTournamentID })
+            ?? loadedStorage.tournaments.first
+            ?? TournamentSlotSnapshot(name: "기본 토너먼트", updatedAt: Date(), state: TournamentState())
+        self.currentTournamentID = currentSlot.id
+        self.currentTournamentName = currentSlot.name
+        self.state = currentSlot.state
+
+        migrateLegacyLogoIfNeeded()
         self.state = normalizePlayerPlacements(self.state)
         if self.state.isRunning, self.state.lastTickAt != nil {
-            // Catch up any wall-clock time that passed while the process was dead.
             let result = TimerEngine.catchUp(self.state, now: Date().timeIntervalSince1970)
             self.state = result.state
             if result.levelAdvanced { soundPlayer.playLevelChange() }
@@ -30,10 +53,9 @@ final class TournamentStore {
             self.state.isRunning = false
             self.state.lastTickAt = nil
         }
+        publishSlotMetadata()
     }
 
-    /// Re-sync the running timer against wall-clock time when the app returns to the
-    /// foreground. Called from `RaiseTimerApp.scenePhase`.
     func catchUpFromBackground() {
         guard state.isRunning, state.lastTickAt != nil else { return }
         let before = state
@@ -43,8 +65,7 @@ final class TournamentStore {
         if result.levelAdvanced { soundPlayer.playLevelChange() }
         persist()
         if result.finished {
-            timerTask?.cancel()
-            timerTask = nil
+            stopTicker()
         } else if timerTask == nil {
             launchTickerLoop()
         }
@@ -64,21 +85,30 @@ final class TournamentStore {
     }
 
     private func launchTickerLoop() {
-        timerTask?.cancel()
+        stopTicker()
         timerTask = Task { [weak self] in
             while !Task.isCancelled {
                 try? await Task.sleep(nanoseconds: 1_000_000_000)
                 guard let self, self.state.isRunning, !Task.isCancelled else { return }
                 let prev = self.state.remainingSeconds
+                let previousLevelIndex = self.state.currentLevelIndex
                 let result = TimerEngine.catchUp(self.state, now: Date().timeIntervalSince1970)
                 self.state = result.state
-                // Countdown beep only on smooth foreground tick (single-second decrement).
-                if !result.levelAdvanced,
-                   result.state.remainingSeconds > 0,
-                   result.state.remainingSeconds <= 5,
-                   result.state.remainingSeconds < prev {
-                    self.soundPlayer.playCountdownTick()
+
+                if !result.levelAdvanced, self.state.currentLevelIndex == previousLevelIndex {
+                    if prev > 60, result.state.remainingSeconds <= 60 {
+                        self.soundPlayer.playMinuteWarning()
+                    }
+                    if prev > 10, result.state.remainingSeconds <= 10 {
+                        self.soundPlayer.playFinalCountdownWarning()
+                    }
+                    if result.state.remainingSeconds > 0,
+                       result.state.remainingSeconds <= 5,
+                       result.state.remainingSeconds < prev {
+                        self.soundPlayer.playCountdownTick()
+                    }
                 }
+
                 if result.levelAdvanced {
                     self.soundPlayer.playLevelChange()
                     self.persist()
@@ -89,15 +119,13 @@ final class TournamentStore {
     }
 
     func pause() {
-        timerTask?.cancel()
-        timerTask = nil
+        stopTicker()
         state = TimerEngine.pause(state)
         persist()
     }
 
     func reset() {
-        timerTask?.cancel()
-        timerTask = nil
+        stopTicker()
         state = TimerEngine.reset(state)
         persist()
     }
@@ -213,24 +241,200 @@ final class TournamentStore {
         updateConfig { cfg in cfg.payoutPercents = percents }
     }
 
+    func saveCurrentBlindStructure(name: String) {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        updateConfig { cfg in
+            let preset = BlindStructurePreset(
+                name: trimmed,
+                startingStack: cfg.startingStack,
+                buyInAmount: cfg.buyInAmount,
+                feePerEntry: cfg.feePerEntry,
+                rebuyAllowed: cfg.rebuyAllowed,
+                levels: cfg.levels.enumerated().map { index, level in
+                    var copy = level
+                    copy.id = UUID()
+                    copy.level = index + 1
+                    return copy
+                },
+                payoutPercents: cfg.payoutPercents
+            )
+            cfg.savedBlindStructures.append(preset)
+        }
+    }
+
+    func loadBlindStructure(id: UUID) {
+        guard let preset = state.config.savedBlindStructures.first(where: { $0.id == id }) else { return }
+        stopTicker()
+        state.config.startingStack = preset.startingStack
+        state.config.buyInAmount = preset.buyInAmount
+        state.config.feePerEntry = preset.feePerEntry
+        state.config.rebuyAllowed = preset.rebuyAllowed
+        state.config.levels = preset.levels.enumerated().map { index, level in
+            var copy = level
+            copy.id = UUID()
+            copy.level = index + 1
+            return copy
+        }
+        state.config.payoutPercents = preset.payoutPercents
+        state.currentLevelIndex = 0
+        state.remainingSeconds = state.config.levels.first?.durationSeconds ?? 0
+        state.isRunning = false
+        state.lastTickAt = nil
+        persist()
+    }
+
+    func deleteBlindStructure(id: UUID) {
+        updateConfig { cfg in
+            cfg.savedBlindStructures.removeAll { $0.id == id }
+        }
+    }
+
+    func updateThemePreset(_ preset: ThemePreset) {
+        updateConfig { cfg in cfg.themePreset = preset }
+    }
+
+    func updateFullscreenLogoFileName(_ fileName: String?) {
+        let previousFileName = state.config.fullscreenLogoFileName
+        if previousFileName != nil, previousFileName != fileName {
+            LogoStore.delete(fileName: previousFileName)
+        }
+        updateConfig {
+            $0.fullscreenLogoFileName = fileName
+            $0.fullscreenLogoBase64 = nil
+        }
+    }
+
+    // MARK: - Tournament Slots
+
+    func createTournamentSlot(name: String) {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+        stopTicker()
+        let config = state.config
+        var newConfig = TournamentConfig()
+        newConfig.themePreset = config.themePreset
+        newConfig.fullscreenLogoFileName = config.fullscreenLogoFileName
+        newConfig.savedBlindStructures = config.savedBlindStructures
+        let newState = TournamentState(config: newConfig)
+        let slot = TournamentSlotSnapshot(
+            name: trimmed,
+            updatedAt: Date(),
+            state: newState
+        )
+        storage.currentTournamentID = slot.id
+        storage.tournaments.append(slot)
+        currentTournamentID = slot.id
+        currentTournamentName = slot.name
+        state = newState
+        persist()
+    }
+
+    func switchTournamentSlot(id: UUID) {
+        guard id != currentTournamentID,
+              let target = storage.tournaments.first(where: { $0.id == id }) else { return }
+        stopTicker()
+        if let currentIndex = storage.tournaments.firstIndex(where: { $0.id == currentTournamentID }) {
+            storage.tournaments[currentIndex] = currentSlotSnapshot()
+        }
+        storage.currentTournamentID = id
+        currentTournamentID = id
+        currentTournamentName = target.name
+        state = normalizePlayerPlacements(
+            target.state.withStoppedTimer().withMigratedLogo(using: LogoStore.migrateLegacyBase64)
+        )
+        persist()
+    }
+
+    func deleteTournamentSlot(id: UUID) {
+        guard storage.tournaments.count > 1 else { return }
+        storage.tournaments.removeAll { $0.id == id }
+        if currentTournamentID == id, let fallback = storage.tournaments.first {
+            stopTicker()
+            storage.currentTournamentID = fallback.id
+            currentTournamentID = fallback.id
+            currentTournamentName = fallback.name
+            state = normalizePlayerPlacements(
+                fallback.state
+                    .withStoppedTimer()
+                    .withMigratedLogo(using: LogoStore.migrateLegacyBase64)
+            )
+        }
+        persist()
+    }
+
     // MARK: - Persistence
 
     private func persist() {
-        if let data = try? JSONEncoder().encode(state) {
-            UserDefaults.standard.set(data, forKey: storageKey)
+        if let currentIndex = storage.tournaments.firstIndex(where: { $0.id == currentTournamentID }) {
+            storage.tournaments[currentIndex] = currentSlotSnapshot()
+        } else {
+            storage.tournaments.append(currentSlotSnapshot())
+            storage.currentTournamentID = currentTournamentID
         }
+        publishSlotMetadata()
+        if let data = try? JSONEncoder().encode(storage) {
+            UserDefaults.standard.set(data, forKey: Self.storageKey)
+        }
+    }
+
+    private func stopTicker() {
+        timerTask?.cancel()
+        timerTask = nil
+    }
+
+    private func publishSlotMetadata() {
+        tournamentSlots = storage.tournaments
+            .map {
+                TournamentSlotSummary(
+                    id: $0.id,
+                    name: $0.name,
+                    updatedAt: $0.updatedAt,
+                    playerCount: $0.state.players.count,
+                    activePlayerCount: $0.state.activePlayers.count,
+                    isCurrent: $0.id == currentTournamentID
+                )
+            }
+            .sorted { $0.updatedAt > $1.updatedAt }
+        currentTournamentName = storage.tournaments.first(where: { $0.id == currentTournamentID })?.name ?? "기본 토너먼트"
+    }
+
+    private func currentSlotSnapshot() -> TournamentSlotSnapshot {
+        TournamentSlotSnapshot(
+            id: currentTournamentID,
+            name: currentTournamentName,
+            updatedAt: Date(),
+            state: state
+        )
+    }
+
+    private func migrateLegacyLogoIfNeeded() {
+        guard state.config.fullscreenLogoFileName == nil,
+              state.config.fullscreenLogoBase64 != nil else { return }
+        state.config.fullscreenLogoFileName = LogoStore.migrateLegacyBase64(state.config.fullscreenLogoBase64)
+        state.config.fullscreenLogoBase64 = nil
+        persist()
     }
 
     private func normalizePlayerPlacements(_ state: TournamentState) -> TournamentState {
         let activeCount = state.players.filter { !$0.isEliminated }.count
-        let maxPlacement = state.players.compactMap(\.placement).max() ?? activeCount
-        var nextPlacement = maxPlacement + 1
-        var placementsById: [UUID: Int] = [:]
+        var nextPlacement = activeCount + 1
 
+        var existingPlacements = Set<Int>()
+        for player in state.players where player.isEliminated && player.placement != nil {
+            existingPlacements.insert(player.placement!)
+        }
+
+        var placementsById: [UUID: Int] = [:]
         for player in state.players where player.isEliminated {
-            let placement = player.placement ?? nextPlacement
-            placementsById[player.id] = placement
-            if player.placement == nil {
+            if let existing = player.placement {
+                placementsById[player.id] = existing
+            } else {
+                while existingPlacements.contains(nextPlacement) {
+                    nextPlacement += 1
+                }
+                placementsById[player.id] = nextPlacement
+                existingPlacements.insert(nextPlacement)
                 nextPlacement += 1
             }
         }
@@ -238,7 +442,13 @@ final class TournamentStore {
         var normalized = state
         normalized.players = state.players.map { player in
             var copy = player
-            copy.placement = player.isEliminated ? placementsById[player.id] : nil
+            if player.isEliminated {
+                copy.placement = placementsById[player.id]
+            } else if activeCount == 1 {
+                copy.placement = 1
+            } else {
+                copy.placement = nil
+            }
             return copy
         }
         return normalized
@@ -254,5 +464,23 @@ final class TournamentStore {
 
     deinit {
         timerTask?.cancel()
+    }
+}
+
+private extension TournamentState {
+    func withStoppedTimer() -> TournamentState {
+        var copy = self
+        copy.isRunning = false
+        copy.lastTickAt = nil
+        return copy
+    }
+
+    func withMigratedLogo(using migrate: (String?) -> String?) -> TournamentState {
+        guard config.fullscreenLogoFileName == nil,
+              config.fullscreenLogoBase64 != nil else { return self }
+        var copy = self
+        copy.config.fullscreenLogoFileName = migrate(copy.config.fullscreenLogoBase64)
+        copy.config.fullscreenLogoBase64 = nil
+        return copy
     }
 }

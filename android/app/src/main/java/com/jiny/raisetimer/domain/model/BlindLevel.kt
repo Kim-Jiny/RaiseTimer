@@ -1,9 +1,11 @@
 package com.jiny.raisetimer.domain.model
 
 import kotlinx.serialization.Serializable
+import java.util.UUID
 
 @Serializable
 data class BlindLevel(
+    val id: String = UUID.randomUUID().toString(),
     val level: Int,
     val smallBlind: Int,
     val bigBlind: Int,

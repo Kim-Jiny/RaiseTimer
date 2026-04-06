@@ -6,21 +6,27 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Groups
+import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import android.app.Activity
+import android.content.pm.ActivityInfo
 import android.view.WindowManager
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -32,19 +38,26 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import com.jiny.raisetimer.ui.payout.PayoutScreen
 import com.jiny.raisetimer.ui.players.PlayersScreen
+import com.jiny.raisetimer.ui.settings.SettingsScreen
 import com.jiny.raisetimer.ui.structure.StructureScreen
 import com.jiny.raisetimer.ui.timer.TimerScreen
+import com.jiny.raisetimer.ui.theme.LocalRaiseTimerPalette
 
 private sealed class Tab(val route: String, val label: String, val icon: ImageVector) {
     data object Timer : Tab("timer", "타이머", Icons.Filled.Timer)
     data object Players : Tab("players", "플레이어", Icons.Filled.Groups)
     data object Structure : Tab("structure", "블라인드", Icons.Filled.Tune)
     data object Payout : Tab("payout", "상금", Icons.Filled.AttachMoney)
+    data object Settings : Tab("settings", "설정", Icons.Filled.Palette)
 }
 
-private val tabs = listOf(Tab.Timer, Tab.Players, Tab.Structure, Tab.Payout)
+private val tabs = listOf(Tab.Timer, Tab.Players, Tab.Structure, Tab.Payout, Tab.Settings)
+private const val TimerFullscreenRoute = "timer_fullscreen"
 
 @Composable
 fun RaiseTimerApp(viewModel: TournamentViewModel = viewModel()) {
@@ -52,6 +65,7 @@ fun RaiseTimerApp(viewModel: TournamentViewModel = viewModel()) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
     val tournamentState by viewModel.state.collectAsStateWithLifecycle()
+    val palette = LocalRaiseTimerPalette.current
 
     // Re-sync the running timer against wall-clock time whenever the app comes back to
     // the foreground. Handles backgrounding, screen off, and cold restart uniformly.
@@ -82,8 +96,22 @@ fun RaiseTimerApp(viewModel: TournamentViewModel = viewModel()) {
         }
     }
 
+    val isFullscreenTimer = currentDestination?.route == TimerFullscreenRoute
+    DisposableEffect(isFullscreenTimer, view) {
+        val activity = view.context as? Activity
+        if (!isFullscreenTimer) {
+            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
+        }
+        onDispose {
+            if (!isFullscreenTimer) {
+                activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            }
+        }
+    }
+
     Scaffold(
         bottomBar = {
+            if (isFullscreenTimer) return@Scaffold
             NavigationBar {
                 tabs.forEach { tab ->
                     val selected = currentDestination
@@ -111,10 +139,82 @@ fun RaiseTimerApp(viewModel: TournamentViewModel = viewModel()) {
             startDestination = Tab.Timer.route,
             modifier = Modifier.fillMaxSize().padding(innerPadding),
         ) {
-            composable(Tab.Timer.route) { TimerScreen(viewModel, PaddingValues()) }
+            composable(Tab.Timer.route) {
+                TimerScreen(
+                    viewModel = viewModel,
+                    contentPadding = PaddingValues(),
+                    isFullscreen = false,
+                    onStartFullscreen = {
+                        viewModel.start()
+                        navController.navigate(TimerFullscreenRoute)
+                    },
+                    onToggleFullscreen = { navController.navigate(TimerFullscreenRoute) },
+                )
+            }
+            composable(TimerFullscreenRoute) {
+                TimerFullscreenRoute(
+                    viewModel = viewModel,
+                    onClose = { navController.popBackStack() },
+                )
+            }
             composable(Tab.Players.route) { PlayersScreen(viewModel, PaddingValues()) }
             composable(Tab.Structure.route) { StructureScreen(viewModel, PaddingValues()) }
             composable(Tab.Payout.route) { PayoutScreen(viewModel, PaddingValues()) }
+            composable(Tab.Settings.route) { SettingsScreen(viewModel, PaddingValues()) }
         }
+    }
+}
+
+@Composable
+private fun TimerFullscreenRoute(
+    viewModel: TournamentViewModel,
+    onClose: () -> Unit,
+) {
+    val context = LocalContext.current
+    val activity = context as? Activity
+    val palette = LocalRaiseTimerPalette.current
+
+    DisposableEffect(activity) {
+        val window = activity?.window
+        val controller = window?.let { WindowCompat.getInsetsController(it, it.decorView) }
+        val previousBehavior = controller?.systemBarsBehavior
+        val previousOrientation = activity?.requestedOrientation
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+        controller?.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller?.hide(WindowInsetsCompat.Type.systemBars())
+
+        onDispose {
+            if (previousOrientation != null) {
+                activity.requestedOrientation = previousOrientation
+            } else {
+                activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            }
+            controller?.show(WindowInsetsCompat.Type.systemBars())
+            if (previousBehavior != null) {
+                controller.systemBarsBehavior = previousBehavior
+            }
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        palette.timerGradient.first().copy(alpha = 0.16f),
+                        palette.timerGradient.getOrElse(1) { androidx.compose.material3.MaterialTheme.colorScheme.background },
+                        palette.timerGradient.getOrElse(2) { androidx.compose.material3.MaterialTheme.colorScheme.surface },
+                    )
+                )
+            )
+    ) {
+        TimerScreen(
+            viewModel = viewModel,
+            contentPadding = PaddingValues(),
+            isFullscreen = true,
+            onToggleFullscreen = onClose,
+        )
     }
 }
