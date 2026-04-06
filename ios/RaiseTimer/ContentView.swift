@@ -7,7 +7,7 @@ struct ContentView: View {
 
     var body: some View {
         let themePreset = store.state.config.themePreset
-        RTTheme.currentPreset = themePreset
+        let _ = (RTTheme.currentPreset = themePreset)
         TabView {
             TimerView(
                 onStartFullscreen: {

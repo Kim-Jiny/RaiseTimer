@@ -13,7 +13,7 @@ struct SettingsView: View {
 
     var body: some View {
         let state = store.state
-        RTTheme.currentPreset = state.config.themePreset
+        let _ = (RTTheme.currentPreset = state.config.themePreset)
         NavigationStack {
             ScrollView {
                 VStack(spacing: 16) {
