@@ -19,11 +19,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.weight
+
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -42,9 +43,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jiny.raisetimer.R
 import com.jiny.raisetimer.domain.model.ThemePreset
 import com.jiny.raisetimer.ui.TournamentViewModel
 import com.jiny.raisetimer.ui.LogoStorage
@@ -85,40 +88,40 @@ fun SettingsScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
-        Text("설정", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.onBackground)
+        Text(stringResource(R.string.settings_nav_title), style = MaterialTheme.typography.titleLarge, color = palette.onSurface)
 
         Card(
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            colors = CardDefaults.cardColors(containerColor = palette.surfaceElevated),
             modifier = Modifier.fillMaxWidth(),
         ) {
             Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text("빠른 설정", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.settings_quick_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Text(
-                    text = "현재 사용 중인 핵심 설정만 먼저 보여줍니다.",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    text = stringResource(R.string.settings_quick_description),
+                    color = palette.onSurfaceMuted,
                     style = MaterialTheme.typography.bodyMedium,
                 )
-                SettingSummaryRow(label = "현재 슬롯", value = currentTournamentName)
+                SettingSummaryRow(label = stringResource(R.string.settings_current_slot), value = currentTournamentName)
                 SettingSummaryRow(
-                    label = "테마",
+                    label = stringResource(R.string.settings_theme),
                     value = state.config.themePreset.name.lowercase().replaceFirstChar { it.titlecase() },
                 )
                 SettingSummaryRow(
-                    label = "전체화면 로고",
-                    value = if (logoBitmap == null) "사용 안 함" else "적용됨",
+                    label = stringResource(R.string.settings_fullscreen_logo),
+                    value = if (logoBitmap == null) stringResource(R.string.settings_logo_none) else stringResource(R.string.settings_logo_applied),
                 )
             }
         }
 
         SettingsSectionCard(
-            title = "테마 컬러",
+            title = stringResource(R.string.settings_theme_color),
             summary = state.config.themePreset.name.lowercase().replaceFirstChar { it.titlecase() },
             expanded = themeExpanded,
             onToggle = { themeExpanded = !themeExpanded },
         ) {
             Text(
-                text = "앱 포인트 컬러와 타이머 분위기를 프리셋으로 바꿉니다.",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                text = stringResource(R.string.settings_theme_description),
+                color = palette.onSurfaceMuted,
                 style = MaterialTheme.typography.bodyMedium,
             )
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -144,14 +147,14 @@ fun SettingsScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues
         }
 
         SettingsSectionCard(
-            title = "전체화면 로고",
-            summary = if (logoBitmap == null) "사용 안 함" else "적용됨",
+            title = stringResource(R.string.settings_fullscreen_logo),
+            summary = if (logoBitmap == null) stringResource(R.string.settings_logo_none) else stringResource(R.string.settings_logo_applied),
             expanded = logoExpanded,
             onToggle = { logoExpanded = !logoExpanded },
         ) {
             Text(
-                text = "선택한 이미지는 전체화면 타이머 배경에 은은하게 표시됩니다.",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                text = stringResource(R.string.settings_logo_description),
+                color = palette.onSurfaceMuted,
                 style = MaterialTheme.typography.bodyMedium,
             )
             Box(
@@ -164,7 +167,7 @@ fun SettingsScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues
                 if (logoBitmap != null) {
                     Image(
                         bitmap = logoBitmap,
-                        contentDescription = "로고 미리보기",
+                        contentDescription = stringResource(R.string.settings_logo_preview),
                         modifier = Modifier
                             .fillMaxSize()
                             .padding(24.dp)
@@ -174,7 +177,7 @@ fun SettingsScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues
                 }
                 Text(
                     text = "00:45",
-                    color = MaterialTheme.colorScheme.onBackground,
+                    color = palette.onSurface,
                     style = MaterialTheme.typography.displayLarge,
                     fontWeight = FontWeight.Black,
                 )
@@ -184,27 +187,27 @@ fun SettingsScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues
                     onClick = { imagePicker.launch(arrayOf("image/*")) },
                     modifier = Modifier.weight(1f),
                 ) {
-                    Text(if (logoBitmap == null) "로고 선택" else "로고 변경")
+                    Text(if (logoBitmap == null) stringResource(R.string.settings_select_logo) else stringResource(R.string.settings_change_logo))
                 }
                 OutlinedButton(
                     onClick = { viewModel.updateFullscreenLogoFileName(null) },
                     enabled = logoBitmap != null,
                     modifier = Modifier.weight(1f),
                 ) {
-                    Text("로고 제거")
+                    Text(stringResource(R.string.settings_remove_logo))
                 }
             }
         }
 
         SettingsSectionCard(
-            title = "토너먼트 슬롯",
+            title = stringResource(R.string.settings_tournament_slots),
             summary = currentTournamentName,
             expanded = slotsExpanded,
             onToggle = { slotsExpanded = !slotsExpanded },
         ) {
             Text(
-                text = "현재 슬롯을 바꾸거나 새 슬롯을 만들어 여러 토너먼트를 관리합니다.",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                text = stringResource(R.string.settings_slots_description),
+                color = palette.onSurfaceMuted,
                 style = MaterialTheme.typography.bodyMedium,
             )
             Row(
@@ -215,7 +218,7 @@ fun SettingsScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues
                 OutlinedTextField(
                     value = newTournamentName,
                     onValueChange = { newTournamentName = it },
-                    label = { Text("새 슬롯 이름") },
+                    label = { Text(stringResource(R.string.settings_new_slot_name)) },
                     singleLine = true,
                     modifier = Modifier.weight(1f),
                 )
@@ -225,14 +228,15 @@ fun SettingsScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues
                         newTournamentName = ""
                     },
                     enabled = newTournamentName.isNotBlank(),
+                    colors = ButtonDefaults.buttonColors(containerColor = palette.chipGold, contentColor = palette.feltGreenDark),
                 ) {
-                    Text("생성")
+                    Text(stringResource(R.string.settings_create))
                 }
             }
 
             slotSummaries.forEach { slot ->
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                    colors = CardDefaults.cardColors(containerColor = palette.surfaceHighlight),
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Row(
@@ -244,12 +248,12 @@ fun SettingsScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues
                     ) {
                         Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = if (slot.isCurrent) "${slot.name} (현재)" else slot.name,
+                                text = if (slot.isCurrent) "${slot.name} ${stringResource(R.string.settings_current_suffix)}" else slot.name,
                                 fontWeight = FontWeight.Bold,
                             )
                             Text(
-                                text = "${slot.activePlayerCount}/${slot.playerCount}명 · ${slot.updatedAt.asSlotDate()}",
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                text = "${stringResource(R.string.settings_player_count_format, slot.activePlayerCount, slot.playerCount)} · ${slot.updatedAt.asSlotDate()}",
+                                color = palette.onSurfaceMuted,
                                 style = MaterialTheme.typography.bodySmall,
                             )
                         }
@@ -257,13 +261,13 @@ fun SettingsScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues
                             onClick = { viewModel.switchTournamentSlot(slot.id) },
                             enabled = !slot.isCurrent,
                         ) {
-                            Text("불러오기")
+                            Text(stringResource(R.string.settings_load))
                         }
                         OutlinedButton(
                             onClick = { viewModel.deleteTournamentSlot(slot.id) },
                             enabled = slotSummaries.size > 1,
                         ) {
-                            Text("삭제")
+                            Text(stringResource(R.string.settings_delete))
                         }
                     }
                 }
@@ -280,8 +284,9 @@ private fun SettingsSectionCard(
     onToggle: () -> Unit,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val palette = LocalRaiseTimerPalette.current
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(containerColor = palette.surfaceElevated),
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -296,13 +301,13 @@ private fun SettingsSectionCard(
                     Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                     Text(
                         text = summary,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = palette.onSurfaceMuted,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 }
                 Text(
-                    text = if (expanded) "접기" else "열기",
-                    color = MaterialTheme.colorScheme.primary,
+                    text = if (expanded) stringResource(R.string.settings_collapse) else stringResource(R.string.settings_expand),
+                    color = palette.chipGold,
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.SemiBold,
                 )
@@ -316,13 +321,14 @@ private fun SettingsSectionCard(
 
 @Composable
 private fun SettingSummaryRow(label: String, value: String) {
+    val palette = LocalRaiseTimerPalette.current
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(label, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(value, color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.SemiBold)
+        Text(label, color = palette.onSurfaceMuted)
+        Text(value, color = palette.onSurface, fontWeight = FontWeight.SemiBold)
     }
 }
 
@@ -333,12 +339,13 @@ private fun ThemePresetCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
 ) {
+    val palette = LocalRaiseTimerPalette.current
     Card(
         modifier = modifier.clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
-            containerColor = if (selected) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.surface
+            containerColor = if (selected) palette.surfaceHighlight else palette.surfaceElevated
         ),
-        border = if (selected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
+        border = if (selected) BorderStroke(2.dp, palette.chipGold) else null,
     ) {
         Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(10.dp)) {
             Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -353,7 +360,7 @@ private fun ThemePresetCard(
             Text(
                 text = themePreset.name.lowercase().replaceFirstChar { it.titlecase() },
                 fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = palette.onSurface,
             )
         }
     }

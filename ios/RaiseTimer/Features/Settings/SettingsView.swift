@@ -18,17 +18,17 @@ struct SettingsView: View {
             ScrollView {
                 VStack(spacing: 16) {
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("빠른 설정")
+                        Text(String(localized: "settings_quick_title"))
                             .font(.headline.bold())
                             .foregroundStyle(RTTheme.onSurface)
-                        Text("현재 사용 중인 핵심 설정만 먼저 보여줍니다.")
+                        Text(String(localized: "settings_quick_description"))
                             .font(.subheadline)
                             .foregroundStyle(RTTheme.onSurfaceMuted)
-                        SettingSummaryRow(label: "현재 슬롯", value: store.currentTournamentName)
-                        SettingSummaryRow(label: "테마", value: state.config.themePreset.title)
+                        SettingSummaryRow(label: String(localized: "settings_current_slot"), value: store.currentTournamentName)
+                        SettingSummaryRow(label: String(localized: "settings_theme"), value: state.config.themePreset.title)
                         SettingSummaryRow(
-                            label: "전체화면 로고",
-                            value: state.config.fullscreenLogoFileName == nil ? "사용 안 함" : "적용됨"
+                            label: String(localized: "settings_fullscreen_logo"),
+                            value: state.config.fullscreenLogoFileName == nil ? String(localized: "settings_logo_none") : String(localized: "settings_logo_applied")
                         )
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -36,11 +36,11 @@ struct SettingsView: View {
                     .background(RTTheme.surfaceElevated, in: RoundedRectangle(cornerRadius: 20))
 
                     SettingsDisclosureCard(
-                        title: "테마 컬러",
+                        title: String(localized: "settings_theme_color"),
                         summary: state.config.themePreset.title,
                         isExpanded: $themeExpanded
                     ) {
-                        Text("앱 포인트 컬러와 타이머 분위기를 프리셋으로 바꿉니다.")
+                        Text(String(localized: "settings_theme_description"))
                             .font(.subheadline)
                             .foregroundStyle(RTTheme.onSurfaceMuted)
 
@@ -57,11 +57,11 @@ struct SettingsView: View {
                     }
 
                     SettingsDisclosureCard(
-                        title: "전체화면 로고",
-                        summary: state.config.fullscreenLogoFileName == nil ? "사용 안 함" : "적용됨",
+                        title: String(localized: "settings_fullscreen_logo"),
+                        summary: state.config.fullscreenLogoFileName == nil ? String(localized: "settings_logo_none") : String(localized: "settings_logo_applied"),
                         isExpanded: $logoExpanded
                     ) {
-                        Text("선택한 이미지는 전체화면 타이머 배경에 은은하게 표시됩니다.")
+                        Text(String(localized: "settings_logo_description"))
                             .font(.subheadline)
                             .foregroundStyle(RTTheme.onSurfaceMuted)
 
@@ -69,14 +69,14 @@ struct SettingsView: View {
 
                         HStack(spacing: 10) {
                             PhotosPicker(selection: $selectedPhoto, matching: .images) {
-                                Text(state.config.fullscreenLogoFileName == nil ? "로고 선택" : "로고 변경")
+                                Text(state.config.fullscreenLogoFileName == nil ? String(localized: "settings_select_logo") : String(localized: "settings_change_logo"))
                                     .frame(maxWidth: .infinity)
                             }
                             .buttonStyle(.borderedProminent)
                             .tint(RTTheme.chipGold)
                             .foregroundStyle(RTTheme.feltGreenDark)
 
-                            Button("로고 제거") {
+                            Button(String(localized: "settings_remove_logo")) {
                                 store.updateFullscreenLogoFileName(nil)
                             }
                             .buttonStyle(.bordered)
@@ -86,19 +86,19 @@ struct SettingsView: View {
                     }
 
                     SettingsDisclosureCard(
-                        title: "토너먼트 슬롯",
+                        title: String(localized: "settings_tournament_slots"),
                         summary: store.currentTournamentName,
                         isExpanded: $slotsExpanded
                     ) {
-                        Text("현재 슬롯을 바꾸거나 새 슬롯을 만들어 여러 토너먼트를 관리합니다.")
+                        Text(String(localized: "settings_slots_description"))
                             .font(.subheadline)
                             .foregroundStyle(RTTheme.onSurfaceMuted)
 
                         HStack(spacing: 10) {
-                            TextField("새 슬롯 이름", text: $newTournamentName)
+                            TextField(String(localized: "settings_new_slot_name"), text: $newTournamentName)
                                 .textFieldStyle(.roundedBorder)
 
-                            Button("생성") {
+                            Button(String(localized: "settings_create")) {
                                 store.createTournamentSlot(name: newTournamentName)
                                 newTournamentName = ""
                             }
@@ -110,14 +110,14 @@ struct SettingsView: View {
 
                         ForEach(store.tournamentSlots) { slot in
                             VStack(alignment: .leading, spacing: 8) {
-                                Text(slot.isCurrent ? "\(slot.name) (현재)" : slot.name)
+                                Text(slot.isCurrent ? "\(slot.name) \(String(localized: "settings_current_suffix"))" : slot.name)
                                     .font(.subheadline.weight(.semibold))
                                     .foregroundStyle(RTTheme.onSurface)
-                                Text("\(slot.activePlayerCount)/\(slot.playerCount)명 · \(slot.updatedAt.formatted(date: .numeric, time: .shortened))")
+                                Text("\(String(format: String(localized: "settings_player_count_format"), slot.activePlayerCount, slot.playerCount)) · \(slot.updatedAt.formatted(date: .numeric, time: .shortened))")
                                     .font(.caption)
                                     .foregroundStyle(RTTheme.onSurfaceMuted)
                                 HStack(spacing: 10) {
-                                    Button("불러오기") {
+                                    Button(String(localized: "settings_load")) {
                                         store.switchTournamentSlot(id: slot.id)
                                     }
                                     .buttonStyle(.borderedProminent)
@@ -125,7 +125,7 @@ struct SettingsView: View {
                                     .foregroundStyle(RTTheme.feltGreenDark)
                                     .disabled(slot.isCurrent)
 
-                                    Button("삭제", role: .destructive) {
+                                    Button(String(localized: "settings_delete"), role: .destructive) {
                                         store.deleteTournamentSlot(id: slot.id)
                                     }
                                     .buttonStyle(.bordered)
@@ -141,7 +141,7 @@ struct SettingsView: View {
                 .padding()
             }
             .background(RTTheme.feltGreenDark.ignoresSafeArea())
-            .navigationTitle("설정")
+            .navigationTitle(String(localized: "settings_nav_title"))
         }
         .task(id: selectedPhoto) {
             guard let selectedPhoto,
@@ -174,7 +174,7 @@ private struct SettingsDisclosureCard<Content: View>: View {
                             .foregroundStyle(RTTheme.onSurfaceMuted)
                     }
                     Spacer()
-                    Text(isExpanded ? "접기" : "열기")
+                    Text(isExpanded ? String(localized: "settings_collapse") : String(localized: "settings_expand"))
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(RTTheme.chipGold)
                 }

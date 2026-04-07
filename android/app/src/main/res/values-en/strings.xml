@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tabs -->
+    <string name="tab_timer">Timer</string>
+    <string name="tab_players">Players</string>
+    <string name="tab_structure">Blinds</string>
+    <string name="tab_payout">Payout</string>
+    <string name="tab_settings">Settings</string>
+
+    <!-- Timer -->
+    <string name="timer_status_running">Running</string>
+    <string name="timer_status_ready">Ready</string>
+    <string name="timer_next_level">Next Level</string>
+    <string name="timer_action_pause">Pause</string>
+    <string name="timer_action_start">Start</string>
+    <string name="timer_action_previous">Previous</string>
+    <string name="timer_action_next">Next</string>
+    <string name="timer_reset_level">Reset Level</string>
+    <string name="timer_summary_title">Game Summary</string>
+    <string name="timer_winner">Winner</string>
+    <string name="timer_undetermined">TBD</string>
+    <string name="timer_place_format">#%1$d %2$s · $%3$s</string>
+    <string name="timer_break_time">Break Time</string>
+    <string name="timer_level_format">Level %1$d</string>
+    <string name="timer_remaining_players">Remaining</string>
+    <string name="timer_entries">Entries</string>
+    <string name="timer_current_blinds">Current Blinds</string>
+    <string name="timer_break">Break</string>
+    <string name="timer_ante_format">Ante %1$s</string>
+    <string name="timer_break_minutes_format">Break %1$d min</string>
+    <string name="timer_blinds_display_format">Blinds %1$s / %2$s</string>
+    <string name="timer_exit_fullscreen">Exit Fullscreen</string>
+    <string name="timer_enter_fullscreen">Fullscreen</string>
+
+    <!-- Players -->
+    <string name="players_title">Players</string>
+    <string name="players_total_entries">Total Entries</string>
+    <string name="players_prize_format">Prize $%1$s</string>
+    <string name="players_name_placeholder">Enter name</string>
+    <string name="players_empty_title">No players yet</string>
+    <string name="players_empty_description">Add players to manage eliminations and calculate payouts.</string>
+    <string name="players_rebuy_format">Rebuy %1$d</string>
+    <string name="players_place_format">#%1$d</string>
+    <string name="players_rebuy_available">Rebuy Open</string>
+    <string name="players_rebuy_closed">Rebuy Closed</string>
+    <string name="players_action_revive">Revive</string>
+    <string name="players_action_eliminate">Eliminate</string>
+    <string name="players_action_delete">Delete</string>
+
+    <!-- Structure -->
+    <string name="structure_nav_title">Blind Structure</string>
+    <string name="structure_summary_format">%1$d levels · Est. %2$d min</string>
+    <string name="structure_starting_stack">Starting Stack</string>
+    <string name="structure_buyin">Buy-in ($)</string>
+    <string name="structure_fee">Fee / Entry ($)</string>
+    <string name="structure_rebuy_allowed">Allow Rebuy</string>
+    <string name="structure_save_settings">Save Settings</string>
+    <string name="structure_save_description">Save current stack, buy-in, blinds, ante, and payout ratios all at once.</string>
+    <string name="structure_settings_name">Settings Name</string>
+    <string name="structure_save">Save</string>
+    <string name="structure_no_saved">No saved settings.</string>
+    <string name="structure_preset_detail_format">%1$d levels · %2$d payouts</string>
+    <string name="structure_load">Load</string>
+    <string name="structure_delete">Delete</string>
+    <string name="structure_break_index_format">Break %1$d</string>
+    <string name="structure_break_toggle">Break</string>
+    <string name="structure_ante">Ante</string>
+    <string name="structure_duration_seconds">Duration (sec)</string>
+    <string name="structure_add_level">Add Level</string>
+    <string name="structure_delete_setting">Delete Setting</string>
+
+    <!-- Payout -->
+    <string name="payout_nav_title">Payout</string>
+    <string name="payout_valid_message">Payout ratio is set to 100%%.</string>
+    <string name="payout_invalid_message">Set the payout ratio total to 100%% for accurate calculations.</string>
+    <string name="payout_distribution_rank">Payout Ranks</string>
+    <string name="payout_people_format">%1$d</string>
+    <string name="payout_total">Total</string>
+    <string name="payout_total_prize">Total Prize (excl. fees)</string>
+    <string name="payout_amount_format">$%1$s</string>
+    <string name="payout_buyin_detail_format">Buy-in %1$s × %2$d = $%3$s</string>
+    <string name="payout_fee_detail_format">Fee %1$s × %2$d = -$%3$s</string>
+    <string name="payout_ratio_title">Payout Ratio (%%)</string>
+    <string name="payout_total_percent_format">Total %1$d%%</string>
+    <string name="payout_place_format">#%1$d</string>
+    <string name="payout_add_rank">Add Rank</string>
+    <string name="payout_winner_format">Winner: %1$s</string>
+
+    <!-- Settings -->
+    <string name="settings_nav_title">Settings</string>
+    <string name="settings_quick_title">Quick Settings</string>
+    <string name="settings_quick_description">Shows only the key settings currently in use.</string>
+    <string name="settings_current_slot">Current Slot</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_fullscreen_logo">Fullscreen Logo</string>
+    <string name="settings_logo_none">None</string>
+    <string name="settings_logo_applied">Applied</string>
+    <string name="settings_theme_color">Theme Color</string>
+    <string name="settings_theme_description">Change the app accent color and timer mood with presets.</string>
+    <string name="settings_logo_description">The selected image is subtly displayed on the fullscreen timer background.</string>
+    <string name="settings_logo_preview">Logo Preview</string>
+    <string name="settings_select_logo">Select Logo</string>
+    <string name="settings_change_logo">Change Logo</string>
+    <string name="settings_remove_logo">Remove Logo</string>
+    <string name="settings_tournament_slots">Tournament Slots</string>
+    <string name="settings_slots_description">Switch slots or create new ones to manage multiple tournaments.</string>
+    <string name="settings_new_slot_name">New Slot Name</string>
+    <string name="settings_create">Create</string>
+    <string name="settings_current_suffix">(Current)</string>
+    <string name="settings_player_count_format">%1$d/%2$d</string>
+    <string name="settings_load">Load</string>
+    <string name="settings_delete">Delete</string>
+    <string name="settings_collapse">Collapse</string>
+    <string name="settings_expand">Expand</string>
+
+    <!-- Common -->
+    <string name="default_tournament_name">Default Tournament</string>
+</resources>

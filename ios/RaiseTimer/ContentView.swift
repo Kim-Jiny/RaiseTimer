@@ -18,19 +18,19 @@ struct ContentView: View {
                     isTimerFullscreen = true
                 }
             )
-                .tabItem { Label("타이머", systemImage: "timer") }
+                .tabItem { Label(String(localized: "tab_timer"), systemImage: "timer") }
 
             PlayersView()
-                .tabItem { Label("플레이어", systemImage: "person.3.fill") }
+                .tabItem { Label(String(localized: "tab_players"), systemImage: "person.3.fill") }
 
             StructureView()
-                .tabItem { Label("블라인드", systemImage: "slider.horizontal.3") }
+                .tabItem { Label(String(localized: "tab_structure"), systemImage: "slider.horizontal.3") }
 
             PayoutView()
-                .tabItem { Label("상금", systemImage: "dollarsign.circle.fill") }
+                .tabItem { Label(String(localized: "tab_payout"), systemImage: "dollarsign.circle.fill") }
 
             SettingsView()
-                .tabItem { Label("설정", systemImage: "paintpalette.fill") }
+                .tabItem { Label(String(localized: "tab_settings"), systemImage: "paintpalette.fill") }
         }
         .id("theme-\(themePreset.rawValue)")
         .tint(RTTheme.color(.chipGold, preset: themePreset))

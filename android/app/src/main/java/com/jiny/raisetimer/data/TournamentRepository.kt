@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.jiny.raisetimer.R
 import com.jiny.raisetimer.domain.model.TournamentAppStorage
 import com.jiny.raisetimer.domain.model.TournamentState
 import kotlinx.coroutines.flow.Flow
@@ -19,18 +20,19 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
  */
 class TournamentRepository(context: Context) {
 
-    private val dataStore = context.applicationContext.dataStore
+    private val appContext = context.applicationContext
+    private val dataStore = appContext.dataStore
     private val json = Json { ignoreUnknownKeys = true; encodeDefaults = true }
 
     val storageFlow: Flow<TournamentAppStorage> = dataStore.data.map { prefs ->
         val raw = prefs[STATE_KEY]
         when {
-            raw == null -> TournamentAppStorage.default()
+            raw == null -> TournamentAppStorage.default(appContext.getString(R.string.default_tournament_name))
             else -> runCatching { json.decodeFromString(TournamentAppStorage.serializer(), raw) }
                 .recoverCatching {
                     val legacyState = json.decodeFromString(TournamentState.serializer(), raw)
                     val slot = com.jiny.raisetimer.domain.model.TournamentSlotSnapshot(
-                        name = "기본 토너먼트",
+                        name = appContext.getString(R.string.default_tournament_name),
                         updatedAt = System.currentTimeMillis(),
                         state = legacyState,
                     )
@@ -39,7 +41,7 @@ class TournamentRepository(context: Context) {
                         tournaments = listOf(slot),
                     )
                 }
-                .getOrElse { TournamentAppStorage.default() }
+                .getOrElse { TournamentAppStorage.default(appContext.getString(R.string.default_tournament_name)) }
         }
     }
 

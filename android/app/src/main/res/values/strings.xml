@@ -2,30 +2,119 @@
 <resources>
     <string name="app_name">RaiseTimer</string>
 
+    <!-- Tabs -->
     <string name="tab_timer">타이머</string>
     <string name="tab_players">플레이어</string>
     <string name="tab_structure">블라인드</string>
     <string name="tab_payout">상금</string>
+    <string name="tab_settings">설정</string>
 
-    <string name="action_start">시작</string>
-    <string name="action_pause">일시정지</string>
-    <string name="action_reset">리셋</string>
-    <string name="action_prev">이전</string>
-    <string name="action_next">다음</string>
-    <string name="action_add">추가</string>
-    <string name="action_delete">삭제</string>
+    <!-- Timer -->
+    <string name="timer_status_running">진행 중</string>
+    <string name="timer_status_ready">준비됨</string>
+    <string name="timer_next_level">다음 레벨</string>
+    <string name="timer_action_pause">일시정지</string>
+    <string name="timer_action_start">시작</string>
+    <string name="timer_action_previous">이전</string>
+    <string name="timer_action_next">다음</string>
+    <string name="timer_reset_level">레벨 처음부터 리셋</string>
+    <string name="timer_summary_title">게임 종료 요약</string>
+    <string name="timer_winner">우승</string>
+    <string name="timer_undetermined">미정</string>
+    <string name="timer_place_format">%1$d위 %2$s · %3$s원</string>
+    <string name="timer_break_time">휴식 시간</string>
+    <string name="timer_level_format">레벨 %1$d</string>
+    <string name="timer_remaining_players">남은 인원</string>
+    <string name="timer_entries">엔트리</string>
+    <string name="timer_current_blinds">현재 블라인드</string>
+    <string name="timer_break">휴식</string>
+    <string name="timer_ante_format">앤티 %1$s</string>
+    <string name="timer_break_minutes_format">휴식 %1$d분</string>
+    <string name="timer_blinds_display_format">블라인드 %1$s / %2$s</string>
+    <string name="timer_exit_fullscreen">전체화면 종료</string>
+    <string name="timer_enter_fullscreen">전체화면</string>
 
-    <string name="label_level">레벨 %1$d</string>
-    <string name="label_break">휴식</string>
-    <string name="label_next_level">다음</string>
-    <string name="label_blinds_format">%1$d / %2$d</string>
-    <string name="label_blinds_with_ante_format">%1$d / %2$d (앤티 %3$d)</string>
-    <string name="label_players_remaining">남은 인원 %1$d / %2$d</string>
-    <string name="label_total_prize">총 상금</string>
-    <string name="label_starting_stack">시작 스택</string>
-    <string name="label_buy_in">바이인</string>
-    <string name="label_rebuy">리바이</string>
-    <string name="label_add_player">참가자 추가</string>
-    <string name="label_eliminate">탈락</string>
-    <string name="label_place">%1$d위</string>
+    <!-- Players -->
+    <string name="players_title">참가자</string>
+    <string name="players_total_entries">총 엔트리</string>
+    <string name="players_prize_format">상금 %1$s원</string>
+    <string name="players_name_placeholder">이름 입력</string>
+    <string name="players_empty_title">아직 참가자가 없습니다</string>
+    <string name="players_empty_description">이름을 추가하면 탈락 관리와 상금 계산이 바로 연결됩니다.</string>
+    <string name="players_rebuy_format">리바이 %1$d</string>
+    <string name="players_place_format">%1$d위</string>
+    <string name="players_rebuy_available">리바이 가능</string>
+    <string name="players_rebuy_closed">리바이 닫힘</string>
+    <string name="players_action_revive">되살리기</string>
+    <string name="players_action_eliminate">탈락</string>
+    <string name="players_action_delete">삭제</string>
+
+    <!-- Structure -->
+    <string name="structure_nav_title">블라인드 구조</string>
+    <string name="structure_summary_format">총 %1$d개 레벨 · 예정 %2$d분</string>
+    <string name="structure_starting_stack">시작 스택</string>
+    <string name="structure_buyin">바이인 (원)</string>
+    <string name="structure_fee">수수료 / 참가당 (원)</string>
+    <string name="structure_rebuy_allowed">리바이 허용</string>
+    <string name="structure_save_settings">블라인드 설정 저장</string>
+    <string name="structure_save_description">현재 스택, 바이인, 블라인드, 앤티, 상금 비율을 한 번에 저장합니다.</string>
+    <string name="structure_settings_name">설정 이름</string>
+    <string name="structure_save">저장</string>
+    <string name="structure_no_saved">저장된 설정이 없습니다.</string>
+    <string name="structure_preset_detail_format">%1$d개 레벨 · %2$d명 분배</string>
+    <string name="structure_load">불러오기</string>
+    <string name="structure_delete">삭제</string>
+    <string name="structure_break_index_format">휴식 %1$d</string>
+    <string name="structure_break_toggle">휴식</string>
+    <string name="structure_ante">앤티</string>
+    <string name="structure_duration_seconds">지속(초)</string>
+    <string name="structure_add_level">레벨 추가</string>
+    <string name="structure_delete_setting">설정 삭제</string>
+
+    <!-- Payout -->
+    <string name="payout_nav_title">상금</string>
+    <string name="payout_valid_message">분배 비율이 100%%로 맞춰져 있습니다.</string>
+    <string name="payout_invalid_message">분배 비율 합계를 100%%로 맞추면 상금이 정확하게 계산됩니다.</string>
+    <string name="payout_distribution_rank">분배 순위</string>
+    <string name="payout_people_format">%1$d명</string>
+    <string name="payout_total">합계</string>
+    <string name="payout_total_prize">총 상금 (수수료 제외)</string>
+    <string name="payout_amount_format">%1$s원</string>
+    <string name="payout_buyin_detail_format">바이인 %1$s × %2$d건 = %3$s원</string>
+    <string name="payout_fee_detail_format">수수료 %1$s × %2$d건 = -%3$s원</string>
+    <string name="payout_ratio_title">분배 비율 (%%)</string>
+    <string name="payout_total_percent_format">합계 %1$d%%</string>
+    <string name="payout_place_format">%1$d위</string>
+    <string name="payout_add_rank">순위 추가</string>
+    <string name="payout_winner_format">우승: %1$s</string>
+
+    <!-- Settings -->
+    <string name="settings_nav_title">설정</string>
+    <string name="settings_quick_title">빠른 설정</string>
+    <string name="settings_quick_description">현재 사용 중인 핵심 설정만 먼저 보여줍니다.</string>
+    <string name="settings_current_slot">현재 슬롯</string>
+    <string name="settings_theme">테마</string>
+    <string name="settings_fullscreen_logo">전체화면 로고</string>
+    <string name="settings_logo_none">사용 안 함</string>
+    <string name="settings_logo_applied">적용됨</string>
+    <string name="settings_theme_color">테마 컬러</string>
+    <string name="settings_theme_description">앱 포인트 컬러와 타이머 분위기를 프리셋으로 바꿉니다.</string>
+    <string name="settings_logo_description">선택한 이미지는 전체화면 타이머 배경에 은은하게 표시됩니다.</string>
+    <string name="settings_logo_preview">로고 미리보기</string>
+    <string name="settings_select_logo">로고 선택</string>
+    <string name="settings_change_logo">로고 변경</string>
+    <string name="settings_remove_logo">로고 제거</string>
+    <string name="settings_tournament_slots">토너먼트 슬롯</string>
+    <string name="settings_slots_description">현재 슬롯을 바꾸거나 새 슬롯을 만들어 여러 토너먼트를 관리합니다.</string>
+    <string name="settings_new_slot_name">새 슬롯 이름</string>
+    <string name="settings_create">생성</string>
+    <string name="settings_current_suffix">(현재)</string>
+    <string name="settings_player_count_format">%1$d/%2$d명</string>
+    <string name="settings_load">불러오기</string>
+    <string name="settings_delete">삭제</string>
+    <string name="settings_collapse">접기</string>
+    <string name="settings_expand">열기</string>
+
+    <!-- Common -->
+    <string name="default_tournament_name">기본 토너먼트</string>
 </resources>

@@ -9,65 +9,65 @@ struct StructureView: View {
         let totalMinutes = state.config.levels.reduce(0) { $0 + $1.durationSeconds } / 60
         NavigationStack {
             Form {
-                Section("토너먼트 설정") {
+                Section(String(localized: "structure_tournament_settings")) {
                     NumberField(
-                        label: "시작 스택",
+                        label: String(localized: "structure_starting_stack"),
                         value: Binding(
                             get: { state.config.startingStack },
                             set: { newValue in store.updateConfig { $0.startingStack = newValue } }
                         )
                     )
                     NumberField(
-                        label: "바이인 (원)",
+                        label: String(localized: "structure_buyin"),
                         value: Binding(
                             get: { state.config.buyInAmount },
                             set: { newValue in store.updateConfig { $0.buyInAmount = newValue } }
                         )
                     )
                     NumberField(
-                        label: "수수료 / 참가당 (원)",
+                        label: String(localized: "structure_fee"),
                         value: Binding(
                             get: { state.config.feePerEntry },
                             set: { newValue in store.updateConfig { $0.feePerEntry = newValue } }
                         )
                     )
-                    Toggle("리바이 허용", isOn: Binding(
+                    Toggle(String(localized: "structure_rebuy_allowed"), isOn: Binding(
                         get: { state.config.rebuyAllowed },
                         set: { newValue in store.updateConfig { $0.rebuyAllowed = newValue } }
                     ))
                 }
 
                 Section {
-                    LabeledContent("레벨 수", value: "\(state.config.levels.count)개")
-                    LabeledContent("예상 진행", value: "\(totalMinutes)분")
+                    LabeledContent(String(localized: "structure_level_count"), value: String(format: String(localized: "structure_level_count_format"), state.config.levels.count))
+                    LabeledContent(String(localized: "structure_estimated_duration"), value: String(format: String(localized: "structure_minutes_format"), totalMinutes))
                 }
 
-                Section("설정 저장") {
-                    TextField("설정 이름", text: $presetName)
-                    Button("현재 설정 저장") {
+                Section(String(localized: "structure_save_settings")) {
+                    TextField(String(localized: "structure_settings_name"), text: $presetName)
+                    Button(String(localized: "structure_save_current")) {
                         store.saveCurrentBlindStructure(name: presetName)
                         presetName = ""
                     }
                     .disabled(presetName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
 
                     if state.config.savedBlindStructures.isEmpty {
-                        Text("저장된 설정이 없습니다.")
+                        Text(String(localized: "structure_no_saved"))
                             .foregroundStyle(.secondary)
                     } else {
                         ForEach(state.config.savedBlindStructures.reversed()) { preset in
                             VStack(alignment: .leading, spacing: 10) {
                                 Text(preset.name)
                                     .font(.headline)
-                                Text("\(preset.levels.count)개 레벨 · \(preset.payoutPercents.count)명 분배")
+                                Text(String(format: String(localized: "structure_preset_detail_format"), preset.levels.count, preset.payoutPercents.count))
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                                 HStack {
-                                    Button("불러오기") {
+                                    Button(String(localized: "structure_load")) {
                                         store.loadBlindStructure(id: preset.id)
                                     }
                                     .buttonStyle(.borderedProminent)
 
-                                    Button("삭제", role: .destructive) {
+                                    Button(String(localized: "structure_delete"), role: .destructive) {
                                         store.deleteBlindStructure(id: preset.id)
                                     }
                                     .buttonStyle(.bordered)
@@ -78,7 +78,7 @@ struct StructureView: View {
                     }
                 }
 
-                Section("블라인드 레벨") {
+                Section(String(localized: "structure_blind_levels")) {
                     ForEach(Array(state.config.levels.enumerated()), id: \.element.id) { index, level in
                         LevelEditor(index: index, level: level)
                     }
@@ -89,14 +89,22 @@ struct StructureView: View {
                     Button {
                         store.addLevel()
                     } label: {
-                        Label("레벨 추가", systemImage: "plus.circle.fill")
+                        Label(String(localized: "structure_add_level"), systemImage: "plus.circle.fill")
                     }
                 }
             }
             .scrollContentBackground(.hidden)
             .background(RTTheme.feltGreenDark)
             .dismissKeyboardOnTap()
-            .navigationTitle("블라인드 구조")
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button(String(localized: "common_done")) {
+                        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+                    }
+                }
+            }
+            .navigationTitle(String(localized: "structure_nav_title"))
             .toolbarColorScheme(.dark, for: .navigationBar)
         }
     }
@@ -110,10 +118,10 @@ private struct LevelEditor: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
-                Text(level.isBreak ? "휴식 \(index + 1)" : "레벨 \(level.level)")
+                Text(level.isBreak ? String(format: String(localized: "structure_break_index_format"), index + 1) : String(format: String(localized: "timer_level_format"), level.level))
                     .font(.headline)
                 Spacer()
-                Toggle("휴식", isOn: Binding(
+                Toggle(String(localized: "structure_break_toggle"), isOn: Binding(
                     get: { level.isBreak },
                     set: { isBreak in
                         var copy = level
@@ -122,7 +130,7 @@ private struct LevelEditor: View {
                     }
                 ))
                 .labelsHidden()
-                Text("휴식")
+                Text(String(localized: "structure_break_toggle"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -143,7 +151,7 @@ private struct LevelEditor: View {
                             store.updateLevel(at: index, with: copy)
                         }
                     ))
-                    NumberField(label: "앤티", value: Binding(
+                    NumberField(label: String(localized: "structure_ante"), value: Binding(
                         get: { level.ante },
                         set: { newValue in
                             var copy = level; copy.ante = newValue
@@ -153,7 +161,7 @@ private struct LevelEditor: View {
                 }
             }
 
-            NumberField(label: "지속(초)", value: Binding(
+            NumberField(label: String(localized: "structure_duration_seconds"), value: Binding(
                 get: { level.durationSeconds },
                 set: { newValue in
                     var copy = level; copy.durationSeconds = max(1, newValue)

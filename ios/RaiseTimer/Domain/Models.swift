@@ -97,7 +97,7 @@ struct TournamentAppStorage: Codable, Hashable {
 
     static func `default`() -> TournamentAppStorage {
         let slot = TournamentSlotSnapshot(
-            name: "기본 토너먼트",
+            name: String(localized: "default_tournament_name"),
             updatedAt: Date(),
             state: TournamentState()
         )

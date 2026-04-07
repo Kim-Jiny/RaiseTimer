@@ -21,6 +21,7 @@
 		BB28BBF6FCE486DDA10BB98E /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF80207ABD9AEB37332BC81C /* Models.swift */; };
 		CF0388461F7EAE897D957A0E /* RaiseTimerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDE93F4F60FB4AE3C00A3EDA /* RaiseTimerApp.swift */; };
 		FE881669B78A8B67B107184F /* TournamentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F20C8ABB641D9482DBC622E /* TournamentStore.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F7A8B9C0D1E2 /* Localizable.xcstrings */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +40,7 @@
 		E121677BDF6148CD6F42AE29 /* PayoutCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayoutCalculator.swift; sourceTree = "<group>"; };
 		EDE93F4F60FB4AE3C00A3EDA /* RaiseTimerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseTimerApp.swift; sourceTree = "<group>"; };
 		EF80207ABD9AEB37332BC81C /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		F1A2B3C4D5E6F7A8B9C0D1E2 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -91,6 +93,7 @@
 			children = (
 				805CDC2D0F23E8F01815833A /* Assets.xcassets */,
 				8444EF517CBBBB4D98ECD30D /* ContentView.swift */,
+				F1A2B3C4D5E6F7A8B9C0D1E2 /* Localizable.xcstrings */,
 				EDE93F4F60FB4AE3C00A3EDA /* RaiseTimerApp.swift */,
 				E6ED035C0D0C452E15FF00E3 /* Domain */,
 				6BF5F8E0986D42909054E18E /* Features */,
@@ -179,6 +182,8 @@
 			knownRegions = (
 				Base,
 				en,
+				ko,
+				ja,
 			);
 			mainGroup = 959CA99A1CE573557C96BAE7;
 			minimizedProjectReferenceProxies = 1;
@@ -198,6 +203,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				84C5C04AF7F5889DA7C55451 /* Assets.xcassets in Resources */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

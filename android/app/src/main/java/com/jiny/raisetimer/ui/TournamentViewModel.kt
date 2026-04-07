@@ -3,6 +3,7 @@ package com.jiny.raisetimer.ui
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import com.jiny.raisetimer.R
 import com.jiny.raisetimer.data.TournamentRepository
 import com.jiny.raisetimer.domain.TimerEngine
 import com.jiny.raisetimer.domain.model.BlindLevel
@@ -37,9 +38,9 @@ class TournamentViewModel(app: Application) : AndroidViewModel(app) {
     val state: StateFlow<TournamentState> = _state.asStateFlow()
     private val _slotSummaries = MutableStateFlow<List<TournamentSlotSummary>>(emptyList())
     val slotSummaries: StateFlow<List<TournamentSlotSummary>> = _slotSummaries.asStateFlow()
-    private val _currentTournamentName = MutableStateFlow("기본 토너먼트")
+    private val _currentTournamentName = MutableStateFlow(app.getString(R.string.default_tournament_name))
     val currentTournamentName: StateFlow<String> = _currentTournamentName.asStateFlow()
-    private var appStorage = TournamentAppStorage.default()
+    private var appStorage = TournamentAppStorage.default(app.getString(R.string.default_tournament_name))
 
     private var tickJob: Job? = null
     private var restoredInitialState = false
@@ -504,7 +505,7 @@ class TournamentViewModel(app: Application) : AndroidViewModel(app) {
     private fun publishSlotMetadata() {
         _currentTournamentName.value =
             appStorage.tournaments.firstOrNull { it.id == appStorage.currentTournamentId }?.name
-                ?: "기본 토너먼트"
+                ?: getApplication<Application>().getString(R.string.default_tournament_name)
         _slotSummaries.value = appStorage.tournaments.map { snapshot ->
             TournamentSlotSummary(
                 id = snapshot.id,

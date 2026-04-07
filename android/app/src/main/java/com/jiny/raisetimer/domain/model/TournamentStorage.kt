@@ -17,9 +17,9 @@ data class TournamentAppStorage(
     val tournaments: List<TournamentSlotSnapshot>,
 ) {
     companion object {
-        fun default(): TournamentAppStorage {
+        fun default(defaultName: String = "기본 토너먼트"): TournamentAppStorage {
             val slot = TournamentSlotSnapshot(
-                name = "기본 토너먼트",
+                name = defaultName,
                 updatedAt = System.currentTimeMillis(),
                 state = TournamentState(),
             )

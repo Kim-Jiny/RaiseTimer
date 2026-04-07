@@ -43,19 +43,19 @@ data class TournamentConfig(
 ) {
     companion object {
         fun defaultBlindStructure(): List<BlindLevel> = listOf(
-            BlindLevel(1, 100, 200, 0, 20 * 60),
-            BlindLevel(2, 200, 400, 0, 20 * 60),
-            BlindLevel(3, 300, 600, 0, 20 * 60),
-            BlindLevel(4, 400, 800, 0, 20 * 60),
+            BlindLevel(level = 1, smallBlind = 100, bigBlind = 200, ante = 0, durationSeconds = 20 * 60),
+            BlindLevel(level = 2, smallBlind = 200, bigBlind = 400, ante = 0, durationSeconds = 20 * 60),
+            BlindLevel(level = 3, smallBlind = 300, bigBlind = 600, ante = 0, durationSeconds = 20 * 60),
+            BlindLevel(level = 4, smallBlind = 400, bigBlind = 800, ante = 0, durationSeconds = 20 * 60),
             BlindLevel.breakLevel(5, 10 * 60),
-            BlindLevel(6, 500, 1_000, 100, 20 * 60),
-            BlindLevel(7, 700, 1_400, 200, 20 * 60),
-            BlindLevel(8, 1_000, 2_000, 300, 20 * 60),
-            BlindLevel(9, 1_500, 3_000, 400, 20 * 60),
-            BlindLevel(10, 2_000, 4_000, 500, 20 * 60),
-            BlindLevel(11, 3_000, 6_000, 1_000, 20 * 60),
-            BlindLevel(12, 5_000, 10_000, 1_000, 20 * 60),
-            BlindLevel(13, 8_000, 16_000, 2_000, 20 * 60),
+            BlindLevel(level = 6, smallBlind = 500, bigBlind = 1_000, ante = 100, durationSeconds = 20 * 60),
+            BlindLevel(level = 7, smallBlind = 700, bigBlind = 1_400, ante = 200, durationSeconds = 20 * 60),
+            BlindLevel(level = 8, smallBlind = 1_000, bigBlind = 2_000, ante = 300, durationSeconds = 20 * 60),
+            BlindLevel(level = 9, smallBlind = 1_500, bigBlind = 3_000, ante = 400, durationSeconds = 20 * 60),
+            BlindLevel(level = 10, smallBlind = 2_000, bigBlind = 4_000, ante = 500, durationSeconds = 20 * 60),
+            BlindLevel(level = 11, smallBlind = 3_000, bigBlind = 6_000, ante = 1_000, durationSeconds = 20 * 60),
+            BlindLevel(level = 12, smallBlind = 5_000, bigBlind = 10_000, ante = 1_000, durationSeconds = 20 * 60),
+            BlindLevel(level = 13, smallBlind = 8_000, bigBlind = 16_000, ante = 2_000, durationSeconds = 20 * 60),
         )
     }
 }

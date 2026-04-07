@@ -24,7 +24,7 @@ final class TournamentStore {
             }
             if let legacy = try? JSONDecoder().decode(TournamentState.self, from: data) {
                 let slot = TournamentSlotSnapshot(
-                    name: "기본 토너먼트",
+                    name: String(localized: "default_tournament_name"),
                     updatedAt: Date(),
                     state: legacy
                 )
@@ -36,7 +36,7 @@ final class TournamentStore {
         self.storage = loadedStorage
         let currentSlot = loadedStorage.tournaments.first(where: { $0.id == loadedStorage.currentTournamentID })
             ?? loadedStorage.tournaments.first
-            ?? TournamentSlotSnapshot(name: "기본 토너먼트", updatedAt: Date(), state: TournamentState())
+            ?? TournamentSlotSnapshot(name: String(localized: "default_tournament_name"), updatedAt: Date(), state: TournamentState())
         self.currentTournamentID = currentSlot.id
         self.currentTournamentName = currentSlot.name
         self.state = currentSlot.state
@@ -396,7 +396,7 @@ final class TournamentStore {
                 )
             }
             .sorted { $0.updatedAt > $1.updatedAt }
-        currentTournamentName = storage.tournaments.first(where: { $0.id == currentTournamentID })?.name ?? "기본 토너먼트"
+        currentTournamentName = storage.tournaments.first(where: { $0.id == currentTournamentID })?.name ?? String(localized: "default_tournament_name")
     }
 
     private func currentSlotSnapshot() -> TournamentSlotSnapshot {

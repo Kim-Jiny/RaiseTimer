@@ -4,18 +4,21 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.weight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -28,18 +31,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jiny.raisetimer.R
 import com.jiny.raisetimer.domain.PayoutCalculator
 import com.jiny.raisetimer.ui.TournamentViewModel
 import com.jiny.raisetimer.ui.clearFocusOnTap
-import com.jiny.raisetimer.ui.theme.SurfaceElevated
-import com.jiny.raisetimer.ui.theme.SurfaceHighlight
+import com.jiny.raisetimer.ui.theme.LocalRaiseTimerPalette
 
 @Composable
 fun PayoutScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues) {
+    val palette = LocalRaiseTimerPalette.current
     val state by viewModel.state.collectAsStateWithLifecycle()
     val payouts = PayoutCalculator.calculate(state)
     val percents = state.config.payoutPercents
@@ -56,80 +61,44 @@ fun PayoutScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues) 
         modifier = Modifier
             .fillMaxSize()
             .clearFocusOnTap()
+            .verticalScroll(rememberScrollState())
             .padding(contentPadding)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        Text(
-            text = "상금",
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onBackground,
-        )
-        Text(
-            text = if (isValidTotal) {
-                "분배 비율이 100%로 맞춰져 있습니다."
-            } else {
-                "분배 비율 합계를 100%로 맞추면 상금이 정확하게 계산됩니다."
-            },
-            color = if (isValidTotal) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
-            style = MaterialTheme.typography.bodyMedium,
-        )
-
-        if (state.isTournamentComplete) {
-            Card(
-                colors = CardDefaults.cardColors(containerColor = SurfaceElevated),
-                modifier = Modifier.fillMaxWidth(),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+        ) {
+            Surface(
+                color = palette.surfaceHighlight,
+                shape = MaterialTheme.shapes.large,
+                modifier = Modifier.weight(1f),
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp),
-                ) {
-                    Text("게임 종료 요약", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-                    Text(
-                        text = "우승: ${state.winner?.name ?: "미정"}",
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold,
-                    )
-                    state.finalStandings.take(payouts.size.coerceAtLeast(3)).forEach { player ->
-                        val amount = player.placement?.let { payouts.getOrNull(it - 1)?.amount } ?: 0
-                        Text(
-                            text = "${player.placement?.toString() ?: "-"}위 ${player.name} · ${"%,d".format(amount)}원",
-                            color = MaterialTheme.colorScheme.onSurface,
-                        )
-                    }
+                Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
+                    Text(stringResource(R.string.payout_distribution_rank), color = palette.onSurfaceMuted, style = MaterialTheme.typography.labelSmall)
+                    Text(stringResource(R.string.payout_people_format, percents.size), color = palette.chipGold, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                 }
             }
-        }
-
-        Surface(
-            color = SurfaceHighlight,
-            shape = MaterialTheme.shapes.large,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+            Surface(
+                color = palette.surfaceHighlight,
+                shape = MaterialTheme.shapes.large,
+                modifier = Modifier.weight(1f),
             ) {
-                Column {
-                    Text("분배 순위", color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    Text("${percents.size}명", color = MaterialTheme.colorScheme.onSurface, fontWeight = FontWeight.Bold)
-                }
-                Column(horizontalAlignment = Alignment.End) {
-                    Text("합계", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Column(modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp)) {
+                    Text(stringResource(R.string.payout_total), color = palette.onSurfaceMuted, style = MaterialTheme.typography.labelSmall)
                     Text(
                         "$totalPercent%",
-                        color = if (totalPercent == 100) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                        color = if (totalPercent == 100) palette.chipGold else palette.chipRed,
                         fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleMedium,
                     )
                 }
             }
         }
 
         Card(
-            colors = CardDefaults.cardColors(containerColor = SurfaceElevated),
+            colors = CardDefaults.cardColors(containerColor = palette.surfaceElevated),
             modifier = Modifier.fillMaxWidth(),
         ) {
             Column(
@@ -137,24 +106,24 @@ fun PayoutScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues) 
                 verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
                 Text(
-                    text = "총 상금 (수수료 제외)",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    text = stringResource(R.string.payout_total_prize),
+                    color = palette.onSurfaceMuted,
                 )
                 Text(
-                    text = "${"%,d".format(state.totalPrizePool)}원",
+                    text = stringResource(R.string.payout_amount_format, "%,d".format(state.totalPrizePool)),
                     style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.primary,
+                    color = palette.chipGold,
                     fontWeight = FontWeight.Bold,
                 )
                 Text(
-                    text = "바이인 ${"%,d".format(state.config.buyInAmount)} × ${state.totalBuyInsAndRebuys}건 = ${"%,d".format(state.totalBuyInsGross)}원",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    text = stringResource(R.string.payout_buyin_detail_format, "%,d".format(state.config.buyInAmount), state.totalBuyInsAndRebuys, "%,d".format(state.totalBuyInsGross)),
+                    color = palette.onSurfaceMuted,
                     style = MaterialTheme.typography.labelMedium,
                 )
                 if (state.config.feePerEntry > 0) {
                     Text(
-                        text = "수수료 ${"%,d".format(state.config.feePerEntry)} × ${state.totalBuyInsAndRebuys}건 = -${"%,d".format(state.totalFee)}원",
-                        color = MaterialTheme.colorScheme.error,
+                        text = stringResource(R.string.payout_fee_detail_format, "%,d".format(state.config.feePerEntry), state.totalBuyInsAndRebuys, "%,d".format(state.totalFee)),
+                        color = palette.chipRed,
                         style = MaterialTheme.typography.labelMedium,
                     )
                 }
@@ -163,16 +132,52 @@ fun PayoutScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues) 
 
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = "분배 비율 (%)",
+                text = stringResource(R.string.payout_ratio_title),
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = palette.onSurface,
                 modifier = Modifier.weight(1f),
             )
             Text(
-                text = "합계 $totalPercent%",
-                color = if (totalPercent == 100) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                text = stringResource(R.string.payout_total_percent_format, totalPercent),
+                color = if (totalPercent == 100) palette.chipGold else palette.chipRed,
                 fontWeight = FontWeight.Bold,
             )
+        }
+
+        Text(
+            text = if (isValidTotal) {
+                stringResource(R.string.payout_valid_message)
+            } else {
+                stringResource(R.string.payout_invalid_message)
+            },
+            color = if (isValidTotal) palette.chipGold else palette.chipRed,
+            style = MaterialTheme.typography.bodyMedium,
+        )
+
+        if (state.isTournamentComplete) {
+            Card(
+                colors = CardDefaults.cardColors(containerColor = palette.surfaceElevated),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp),
+                ) {
+                    Text(stringResource(R.string.timer_summary_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = stringResource(R.string.payout_winner_format, state.winner?.name ?: stringResource(R.string.timer_undetermined)),
+                        color = palette.chipGold,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    state.finalStandings.take(payouts.size.coerceAtLeast(3)).forEach { player ->
+                        val amount = player.placement?.let { payouts.getOrNull(it - 1)?.amount } ?: 0
+                        Text(
+                            text = stringResource(R.string.timer_place_format, player.placement ?: 0, player.name, "%,d".format(amount)),
+                            color = palette.onSurface,
+                        )
+                    }
+                }
+            }
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -185,61 +190,57 @@ fun PayoutScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues) 
                         Button(
                             onClick = { viewModel.updatePayoutPercents(values) },
                             modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(containerColor = palette.surfaceElevated, contentColor = palette.onSurface),
                         ) {
                             Text(label)
                         }
                     }
                     repeat(2 - row.size) {
-                        androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
+                        Spacer(Modifier.weight(1f))
                     }
                 }
             }
         }
 
-        LazyColumn(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            itemsIndexed(percents) { index, percent ->
-                Card(
-                    colors = CardDefaults.cardColors(containerColor = SurfaceHighlight),
-                    modifier = Modifier.fillMaxWidth(),
+        percents.forEachIndexed { index, percent ->
+            Card(
+                colors = CardDefaults.cardColors(containerColor = palette.surfaceHighlight),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+                    Text(
+                        text = stringResource(R.string.payout_place_format, index + 1),
+                        fontWeight = FontWeight.Bold,
+                        color = palette.onSurface,
+                        modifier = Modifier.weight(1f),
+                    )
+                    OutlinedTextField(
+                        value = percent.toString(),
+                        onValueChange = { text ->
+                            val parsed = text.filter { it.isDigit() }.toIntOrNull() ?: 0
+                            val newList = percents.toMutableList().also { it[index] = parsed }
+                            viewModel.updatePayoutPercents(newList)
+                        },
+                        label = { Text("%") },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        singleLine = true,
+                        modifier = Modifier.width(96.dp),
+                    )
+                    Text(
+                        text = "  " + stringResource(R.string.payout_amount_format, "%,d".format(payouts.getOrNull(index)?.amount ?: 0)),
+                        color = palette.chipGold,
+                    )
+                    IconButton(
+                        onClick = {
+                            val newList = percents.toMutableList().also { it.removeAt(index) }
+                            viewModel.updatePayoutPercents(newList)
+                        },
+                        enabled = percents.size > 1,
                     ) {
-                        Text(
-                            text = "${index + 1}위",
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.weight(1f),
-                        )
-                        OutlinedTextField(
-                            value = percent.toString(),
-                            onValueChange = { text ->
-                                val parsed = text.filter { it.isDigit() }.toIntOrNull() ?: 0
-                                val newList = percents.toMutableList().also { it[index] = parsed }
-                                viewModel.updatePayoutPercents(newList)
-                            },
-                            label = { Text("%") },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            singleLine = true,
-                            modifier = Modifier.width(96.dp),
-                        )
-                        Text(
-                            text = "  ${"%,d".format(payouts.getOrNull(index)?.amount ?: 0)}원",
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                        IconButton(
-                            onClick = {
-                                val newList = percents.toMutableList().also { it.removeAt(index) }
-                                viewModel.updatePayoutPercents(newList)
-                            },
-                            enabled = percents.size > 1,
-                        ) {
-                            Icon(Icons.Filled.Remove, contentDescription = "삭제")
-                        }
+                        Icon(Icons.Filled.Remove, contentDescription = stringResource(R.string.structure_delete))
                     }
                 }
             }
@@ -251,9 +252,12 @@ fun PayoutScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues) 
                 viewModel.updatePayoutPercents(newList)
             },
             modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = palette.chipGold, contentColor = palette.feltGreenDark),
         ) {
             Icon(Icons.Filled.Add, contentDescription = null)
-            Text("순위 추가")
+            Text(stringResource(R.string.payout_add_rank))
         }
+
+        Spacer(Modifier.height(8.dp))
     }
 }

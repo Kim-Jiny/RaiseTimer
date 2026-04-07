@@ -4,16 +4,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.weight
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.IconButtonDefaults
@@ -27,21 +29,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberSaveable
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.jiny.raisetimer.R
 import com.jiny.raisetimer.domain.model.BlindLevel
 import com.jiny.raisetimer.ui.TournamentViewModel
 import com.jiny.raisetimer.ui.clearFocusOnTap
+import com.jiny.raisetimer.ui.theme.LocalRaiseTimerPalette
 
 @Composable
 fun StructureScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues) {
+    val palette = LocalRaiseTimerPalette.current
     val state by viewModel.state.collectAsStateWithLifecycle()
     val totalMinutes = state.config.levels.sumOf { it.durationSeconds } / 60
     var presetName by rememberSaveable { mutableStateOf("") }
@@ -50,23 +56,24 @@ fun StructureScreen(viewModel: TournamentViewModel, contentPadding: PaddingValue
         modifier = Modifier
             .fillMaxSize()
             .clearFocusOnTap()
+            .verticalScroll(rememberScrollState())
             .padding(contentPadding)
             .padding(horizontal = 16.dp, vertical = 12.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Text(
-            text = "블라인드 구조",
+            text = stringResource(R.string.structure_nav_title),
             style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onBackground,
+            color = palette.onSurface,
         )
         Text(
-            text = "총 ${state.config.levels.size}개 레벨 · 예정 ${totalMinutes}분",
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            text = stringResource(R.string.structure_summary_format, state.config.levels.size, totalMinutes),
+            color = palette.onSurfaceMuted,
             style = MaterialTheme.typography.bodyMedium,
         )
 
         Card(
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            colors = CardDefaults.cardColors(containerColor = palette.surfaceElevated),
             modifier = Modifier.fillMaxWidth(),
         ) {
             Column(
@@ -74,21 +81,21 @@ fun StructureScreen(viewModel: TournamentViewModel, contentPadding: PaddingValue
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 NumberField(
-                    label = "시작 스택",
+                    label = stringResource(R.string.structure_starting_stack),
                     value = state.config.startingStack,
                     onValueChange = { newValue ->
                         viewModel.updateConfig { it.copy(startingStack = newValue) }
                     },
                 )
                 NumberField(
-                    label = "바이인 (원)",
+                    label = stringResource(R.string.structure_buyin),
                     value = state.config.buyInAmount,
                     onValueChange = { newValue ->
                         viewModel.updateConfig { it.copy(buyInAmount = newValue) }
                     },
                 )
                 NumberField(
-                    label = "수수료 / 참가당 (원)",
+                    label = stringResource(R.string.structure_fee),
                     value = state.config.feePerEntry,
                     onValueChange = { newValue ->
                         viewModel.updateConfig { it.copy(feePerEntry = newValue) }
@@ -99,8 +106,8 @@ fun StructureScreen(viewModel: TournamentViewModel, contentPadding: PaddingValue
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = "리바이 허용",
-                        color = MaterialTheme.colorScheme.onSurface,
+                        text = stringResource(R.string.structure_rebuy_allowed),
+                        color = palette.onSurface,
                         modifier = Modifier.weight(1f),
                     )
                     Switch(
@@ -114,17 +121,17 @@ fun StructureScreen(viewModel: TournamentViewModel, contentPadding: PaddingValue
         }
 
         Card(
-            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            colors = CardDefaults.cardColors(containerColor = palette.surfaceElevated),
             modifier = Modifier.fillMaxWidth(),
         ) {
             Column(
                 modifier = Modifier.padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp),
             ) {
-                Text("블라인드 설정 저장", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.structure_save_settings), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
                 Text(
-                    text = "현재 스택, 바이인, 블라인드, 앤티, 상금 비율을 한 번에 저장합니다.",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    text = stringResource(R.string.structure_save_description),
+                    color = palette.onSurfaceMuted,
                     style = MaterialTheme.typography.bodyMedium,
                 )
                 Row(
@@ -135,7 +142,7 @@ fun StructureScreen(viewModel: TournamentViewModel, contentPadding: PaddingValue
                     OutlinedTextField(
                         value = presetName,
                         onValueChange = { presetName = it },
-                        label = { Text("설정 이름") },
+                        label = { Text(stringResource(R.string.structure_settings_name)) },
                         singleLine = true,
                         modifier = Modifier.weight(1f),
                     )
@@ -145,21 +152,22 @@ fun StructureScreen(viewModel: TournamentViewModel, contentPadding: PaddingValue
                             presetName = ""
                         },
                         enabled = presetName.isNotBlank(),
+                        colors = ButtonDefaults.buttonColors(containerColor = palette.chipGold, contentColor = palette.feltGreenDark),
                     ) {
-                        Text("저장")
+                        Text(stringResource(R.string.structure_save))
                     }
                 }
 
                 if (state.config.savedBlindStructures.isEmpty()) {
                     Text(
-                        text = "저장된 설정이 없습니다.",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        text = stringResource(R.string.structure_no_saved),
+                        color = palette.onSurfaceMuted,
                         style = MaterialTheme.typography.bodyMedium,
                     )
                 } else {
                     state.config.savedBlindStructures.reversed().forEach { preset ->
                         Card(
-                            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+                            colors = CardDefaults.cardColors(containerColor = palette.surfaceHighlight),
                             modifier = Modifier.fillMaxWidth(),
                         ) {
                             Row(
@@ -172,21 +180,21 @@ fun StructureScreen(viewModel: TournamentViewModel, contentPadding: PaddingValue
                                 Column(modifier = Modifier.weight(1f)) {
                                     Text(preset.name, fontWeight = FontWeight.Bold)
                                     Text(
-                                        text = "${preset.levels.size}개 레벨 · ${preset.payoutPercents.size}명 분배",
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        text = stringResource(R.string.structure_preset_detail_format, preset.levels.size, preset.payoutPercents.size),
+                                        color = palette.onSurfaceMuted,
                                         style = MaterialTheme.typography.bodySmall,
                                     )
                                 }
                                 OutlinedButton(onClick = { viewModel.loadBlindStructure(preset.id) }) {
-                                    Text("불러오기")
+                                    Text(stringResource(R.string.structure_load))
                                 }
                                 IconButton(
                                     onClick = { viewModel.deleteBlindStructure(preset.id) },
                                     colors = IconButtonDefaults.iconButtonColors(
-                                        contentColor = MaterialTheme.colorScheme.error
+                                        contentColor = palette.chipRed
                                     ),
                                 ) {
-                                    Icon(Icons.Filled.Delete, contentDescription = "설정 삭제")
+                                    Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.structure_delete_setting))
                                 }
                             }
                         }
@@ -195,26 +203,22 @@ fun StructureScreen(viewModel: TournamentViewModel, contentPadding: PaddingValue
             }
         }
 
-        LazyColumn(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-        ) {
-            itemsIndexed(state.config.levels, key = { _, level -> level.id }) { index, level ->
-                LevelCard(
-                    index = index,
-                    level = level,
-                    onChange = { updated -> viewModel.updateLevel(index, updated) },
-                    onDelete = { viewModel.removeLevel(index) },
-                )
-            }
+        state.config.levels.forEachIndexed { index, level ->
+            LevelCard(
+                index = index,
+                level = level,
+                onChange = { updated -> viewModel.updateLevel(index, updated) },
+                onDelete = { viewModel.removeLevel(index) },
+            )
         }
 
         Button(
             onClick = viewModel::addLevel,
             modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(containerColor = palette.chipGold, contentColor = palette.feltGreenDark),
         ) {
             Icon(Icons.Filled.Add, contentDescription = null)
-            Text("레벨 추가")
+            Text(stringResource(R.string.structure_add_level))
         }
     }
 }
@@ -226,8 +230,9 @@ private fun LevelCard(
     onChange: (BlindLevel) -> Unit,
     onDelete: () -> Unit,
 ) {
+    val palette = LocalRaiseTimerPalette.current
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        colors = CardDefaults.cardColors(containerColor = palette.surfaceHighlight),
         modifier = Modifier.fillMaxWidth(),
     ) {
         Column(
@@ -236,18 +241,18 @@ private fun LevelCard(
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    text = if (level.isBreak) "휴식 ${index + 1}" else "레벨 ${level.level}",
+                    text = if (level.isBreak) stringResource(R.string.structure_break_index_format, index + 1) else stringResource(R.string.timer_level_format, level.level),
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = palette.onSurface,
                     modifier = Modifier.weight(1f),
                 )
-                Text("휴식", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.structure_break_toggle), color = palette.onSurfaceMuted)
                 Switch(
                     checked = level.isBreak,
                     onCheckedChange = { isBreak -> onChange(level.copy(isBreak = isBreak)) },
                 )
                 IconButton(onClick = onDelete) {
-                    Icon(Icons.Filled.Delete, contentDescription = "삭제")
+                    Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.structure_delete), tint = palette.chipRed)
                 }
             }
 
@@ -269,7 +274,7 @@ private fun LevelCard(
                         onValueChange = { onChange(level.copy(bigBlind = it)) },
                     )
                     NumberField(
-                        label = "앤티",
+                        label = stringResource(R.string.structure_ante),
                         value = level.ante,
                         modifier = Modifier.weight(1f),
                         onValueChange = { onChange(level.copy(ante = it)) },
@@ -278,7 +283,7 @@ private fun LevelCard(
             }
 
             NumberField(
-                label = "지속(초)",
+                label = stringResource(R.string.structure_duration_seconds),
                 value = level.durationSeconds,
                 onValueChange = { onChange(level.copy(durationSeconds = it.coerceAtLeast(1))) },
             )

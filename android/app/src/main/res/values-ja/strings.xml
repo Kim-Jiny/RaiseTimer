@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Tabs -->
+    <string name="tab_timer">タイマー</string>
+    <string name="tab_players">プレイヤー</string>
+    <string name="tab_structure">ブラインド</string>
+    <string name="tab_payout">賞金</string>
+    <string name="tab_settings">設定</string>
+
+    <!-- Timer -->
+    <string name="timer_status_running">進行中</string>
+    <string name="timer_status_ready">準備完了</string>
+    <string name="timer_next_level">次のレベル</string>
+    <string name="timer_action_pause">一時停止</string>
+    <string name="timer_action_start">スタート</string>
+    <string name="timer_action_previous">前へ</string>
+    <string name="timer_action_next">次へ</string>
+    <string name="timer_reset_level">レベルをリセット</string>
+    <string name="timer_summary_title">ゲーム終了サマリー</string>
+    <string name="timer_winner">優勝</string>
+    <string name="timer_undetermined">未定</string>
+    <string name="timer_place_format">%1$d位 %2$s · %3$s円</string>
+    <string name="timer_break_time">休憩時間</string>
+    <string name="timer_level_format">レベル %1$d</string>
+    <string name="timer_remaining_players">残りプレイヤー</string>
+    <string name="timer_entries">エントリー</string>
+    <string name="timer_current_blinds">現在のブラインド</string>
+    <string name="timer_break">休憩</string>
+    <string name="timer_ante_format">アンティ %1$s</string>
+    <string name="timer_break_minutes_format">休憩 %1$d分</string>
+    <string name="timer_blinds_display_format">ブラインド %1$s / %2$s</string>
+    <string name="timer_exit_fullscreen">フルスクリーン終了</string>
+    <string name="timer_enter_fullscreen">フルスクリーン</string>
+
+    <!-- Players -->
+    <string name="players_title">参加者</string>
+    <string name="players_total_entries">総エントリー</string>
+    <string name="players_prize_format">賞金 %1$s円</string>
+    <string name="players_name_placeholder">名前を入力</string>
+    <string name="players_empty_title">参加者がいません</string>
+    <string name="players_empty_description">プレイヤーを追加すると、脱落管理と賞金計算が連動します。</string>
+    <string name="players_rebuy_format">リバイ %1$d</string>
+    <string name="players_place_format">%1$d位</string>
+    <string name="players_rebuy_available">リバイ可能</string>
+    <string name="players_rebuy_closed">リバイ終了</string>
+    <string name="players_action_revive">復活</string>
+    <string name="players_action_eliminate">脱落</string>
+    <string name="players_action_delete">削除</string>
+
+    <!-- Structure -->
+    <string name="structure_nav_title">ブラインド構成</string>
+    <string name="structure_summary_format">%1$dレベル · 予想 %2$d分</string>
+    <string name="structure_starting_stack">スターティングスタック</string>
+    <string name="structure_buyin">バイイン (円)</string>
+    <string name="structure_fee">手数料 / エントリー (円)</string>
+    <string name="structure_rebuy_allowed">リバイ許可</string>
+    <string name="structure_save_settings">設定を保存</string>
+    <string name="structure_save_description">現在のスタック、バイイン、ブラインド、アンティ、賞金比率を一括保存します。</string>
+    <string name="structure_settings_name">設定名</string>
+    <string name="structure_save">保存</string>
+    <string name="structure_no_saved">保存された設定がありません。</string>
+    <string name="structure_preset_detail_format">%1$dレベル · %2$d名配分</string>
+    <string name="structure_load">読み込み</string>
+    <string name="structure_delete">削除</string>
+    <string name="structure_break_index_format">休憩 %1$d</string>
+    <string name="structure_break_toggle">休憩</string>
+    <string name="structure_ante">アンティ</string>
+    <string name="structure_duration_seconds">時間(秒)</string>
+    <string name="structure_add_level">レベル追加</string>
+    <string name="structure_delete_setting">設定削除</string>
+
+    <!-- Payout -->
+    <string name="payout_nav_title">賞金</string>
+    <string name="payout_valid_message">配分比率が100%%に設定されています。</string>
+    <string name="payout_invalid_message">配分比率の合計を100%%にすると賞金が正確に計算されます。</string>
+    <string name="payout_distribution_rank">配分順位</string>
+    <string name="payout_people_format">%1$d名</string>
+    <string name="payout_total">合計</string>
+    <string name="payout_total_prize">総賞金 (手数料除く)</string>
+    <string name="payout_amount_format">%1$s円</string>
+    <string name="payout_buyin_detail_format">バイイン %1$s × %2$d件 = %3$s円</string>
+    <string name="payout_fee_detail_format">手数料 %1$s × %2$d件 = -%3$s円</string>
+    <string name="payout_ratio_title">配分比率 (%%)</string>
+    <string name="payout_total_percent_format">合計 %1$d%%</string>
+    <string name="payout_place_format">%1$d位</string>
+    <string name="payout_add_rank">順位追加</string>
+    <string name="payout_winner_format">優勝: %1$s</string>
+
+    <!-- Settings -->
+    <string name="settings_nav_title">設定</string>
+    <string name="settings_quick_title">クイック設定</string>
+    <string name="settings_quick_description">現在使用中の主要設定のみ表示します。</string>
+    <string name="settings_current_slot">現在のスロット</string>
+    <string name="settings_theme">テーマ</string>
+    <string name="settings_fullscreen_logo">フルスクリーンロゴ</string>
+    <string name="settings_logo_none">なし</string>
+    <string name="settings_logo_applied">適用済み</string>
+    <string name="settings_theme_color">テーマカラー</string>
+    <string name="settings_theme_description">アプリのアクセントカラーとタイマーの雰囲気をプリセットで変更します。</string>
+    <string name="settings_logo_description">選択した画像はフルスクリーンタイマーの背景にさりげなく表示されます。</string>
+    <string name="settings_logo_preview">ロゴプレビュー</string>
+    <string name="settings_select_logo">ロゴ選択</string>
+    <string name="settings_change_logo">ロゴ変更</string>
+    <string name="settings_remove_logo">ロゴ削除</string>
+    <string name="settings_tournament_slots">トーナメントスロット</string>
+    <string name="settings_slots_description">スロットを切り替えたり新しいスロットを作成して複数のトーナメントを管理します。</string>
+    <string name="settings_new_slot_name">新しいスロット名</string>
+    <string name="settings_create">作成</string>
+    <string name="settings_current_suffix">(現在)</string>
+    <string name="settings_player_count_format">%1$d/%2$d名</string>
+    <string name="settings_load">読み込み</string>
+    <string name="settings_delete">削除</string>
+    <string name="settings_collapse">閉じる</string>
+    <string name="settings_expand">開く</string>
+
+    <!-- Common -->
+    <string name="default_tournament_name">デフォルトトーナメント</string>
+</resources>

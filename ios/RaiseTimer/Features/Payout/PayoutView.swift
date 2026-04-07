@@ -22,8 +22,8 @@ struct PayoutView: View {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 16) {
                         HStack {
-                            SummaryPill(label: "분배 순위", value: "\(percents.count)명")
-                            SummaryPill(label: "합계", value: "\(totalPercent)%", highlight: totalPercent == 100)
+                            SummaryPill(label: String(localized: "payout_distribution_rank"), value: String(format: String(localized: "payout_people_format"), percents.count))
+                            SummaryPill(label: String(localized: "payout_total"), value: "\(totalPercent)%", highlight: totalPercent == 100)
                         }
 
                         TotalPrizeCard(
@@ -36,36 +36,36 @@ struct PayoutView: View {
                         )
 
                         HStack {
-                            Text("분배 비율 (%)")
+                            Text(String(localized: "payout_ratio_title"))
                                 .font(.headline)
                                 .foregroundStyle(.white)
                             Spacer()
-                            Text("합계 \(totalPercent)%")
+                            Text(String(format: String(localized: "payout_total_percent_format"), totalPercent))
                                 .fontWeight(.bold)
                                 .foregroundStyle(totalPercent == 100 ? RTTheme.chipGold : RTTheme.chipRed)
                         }
 
                         Text(
                             isValidTotal
-                            ? "분배 비율이 100%로 맞춰져 있습니다."
-                            : "분배 비율 합계를 100%로 맞추면 상금이 정확하게 계산됩니다."
+                            ? String(localized: "payout_valid_message")
+                            : String(localized: "payout_invalid_message")
                         )
                         .font(.subheadline)
                         .foregroundStyle(isValidTotal ? RTTheme.chipGold : RTTheme.chipRed)
 
                         if state.isTournamentComplete {
                             VStack(alignment: .leading, spacing: 6) {
-                                Text("게임 종료 요약")
+                                Text(String(localized: "timer_summary_title"))
                                     .font(.headline)
                                     .foregroundStyle(.white)
-                                Text("우승: \(state.winner?.name ?? "미정")")
+                                Text(String(format: String(localized: "payout_winner_format"), state.winner?.name ?? String(localized: "timer_undetermined")))
                                     .fontWeight(.bold)
                                     .foregroundStyle(RTTheme.chipGold)
                                 ForEach(state.finalStandings.prefix(max(payouts.count, 3)), id: \.id) { player in
                                     let amount = player.placement.flatMap { place in
                                         payouts.indices.contains(place - 1) ? payouts[place - 1].amount : 0
                                     } ?? 0
-                                    Text("\(player.placement ?? 0)위 \(player.name) · \(formatted(amount))원")
+                                    Text(String(format: String(localized: "timer_place_format"), player.placement ?? 0, player.name, formatted(amount)))
                                         .foregroundStyle(RTTheme.onSurfaceMuted)
                                 }
                             }
@@ -75,7 +75,7 @@ struct PayoutView: View {
                         }
 
                         VStack(alignment: .leading, spacing: 10) {
-                            Text("프리셋")
+                            Text(String(localized: "payout_presets"))
                                 .font(.headline)
                                 .foregroundStyle(.white)
                             ForEach(Array(payoutPresets.chunked(into: 2).enumerated()), id: \.offset) { _, row in
@@ -114,7 +114,7 @@ struct PayoutView: View {
                         Button {
                             store.updatePayoutPercents(percents + [0])
                         } label: {
-                            Label("순위 추가", systemImage: "plus.circle.fill")
+                            Label(String(localized: "payout_add_rank"), systemImage: "plus.circle.fill")
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 8)
                         }
@@ -126,7 +126,7 @@ struct PayoutView: View {
                 }
             }
             .dismissKeyboardOnTap()
-            .navigationTitle("상금")
+            .navigationTitle(String(localized: "payout_nav_title"))
             .toolbarColorScheme(.dark, for: .navigationBar)
         }
     }
@@ -163,16 +163,16 @@ private struct TotalPrizeCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("총 상금 (수수료 제외)")
+            Text(String(localized: "payout_total_prize"))
                 .foregroundStyle(RTTheme.onSurfaceMuted)
-            Text("\(formatted(pool))원")
+            Text(String(format: String(localized: "payout_amount_format"), formatted(pool)))
                 .font(.system(size: 34, weight: .bold))
                 .foregroundStyle(RTTheme.chipGold)
-            Text("바이인 \(formatted(buyIn)) × \(entries)건 = \(formatted(gross))원")
+            Text(String(format: String(localized: "payout_buyin_detail_format"), formatted(buyIn), entries, formatted(gross)))
                 .font(.caption)
                 .foregroundStyle(RTTheme.onSurfaceMuted)
             if feePerEntry > 0 {
-                Text("수수료 \(formatted(feePerEntry)) × \(entries)건 = -\(formatted(fee))원")
+                Text(String(format: String(localized: "payout_fee_detail_format"), formatted(feePerEntry), entries, formatted(fee)))
                     .font(.caption)
                     .foregroundStyle(RTTheme.chipRed)
             }
@@ -193,7 +193,7 @@ private struct PayoutRow: View {
 
     var body: some View {
         HStack {
-            Text("\(place)위")
+            Text(String(format: String(localized: "payout_place_format"), place))
                 .fontWeight(.bold)
                 .foregroundStyle(.white)
                 .frame(width: 40, alignment: .leading)
@@ -205,7 +205,7 @@ private struct PayoutRow: View {
 
             Spacer()
 
-            Text("\(formatted(amount))원")
+            Text(String(format: String(localized: "payout_amount_format"), formatted(amount)))
                 .foregroundStyle(RTTheme.chipGold)
 
             Button(action: onRemove) {

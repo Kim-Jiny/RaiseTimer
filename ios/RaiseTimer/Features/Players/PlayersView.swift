@@ -15,24 +15,24 @@ struct PlayersView: View {
                 RTTheme.feltGreenDark.ignoresSafeArea()
                 VStack(spacing: 12) {
                     HStack {
-                        StatCapsule(label: "총 엔트리", value: "\(state.totalBuyInsAndRebuys)")
-                        StatCapsule(label: "상금", value: "\(formattedAmount(state.totalPrizePool))원")
+                        StatCapsule(label: String(localized: "players_total_entries"), value: "\(state.totalBuyInsAndRebuys)")
+                        StatCapsule(label: String(localized: "tab_payout"), value: String(format: String(localized: "payout_amount_format"), formattedAmount(state.totalPrizePool)))
                     }
                     .padding(.horizontal)
 
                     if state.isTournamentComplete {
                         VStack(alignment: .leading, spacing: 6) {
-                            Text("게임 종료 요약")
+                            Text(String(localized: "timer_summary_title"))
                                 .font(.headline)
                                 .foregroundStyle(.white)
-                            Text("우승 \(state.winner?.name ?? "미정")")
+                            Text("\(String(localized: "timer_winner")) \(state.winner?.name ?? String(localized: "timer_undetermined"))")
                                 .fontWeight(.bold)
                                 .foregroundStyle(RTTheme.chipGold)
                             ForEach(state.finalStandings.prefix(3), id: \.id) { player in
                                 let amount = player.placement.flatMap { place in
                                     payouts.indices.contains(place - 1) ? payouts[place - 1].amount : 0
                                 } ?? 0
-                                Text("\(player.placement ?? 0)위 \(player.name) · \(formattedAmount(amount))원")
+                                Text(String(format: String(localized: "timer_place_format"), player.placement ?? 0, player.name, formattedAmount(amount)))
                                     .font(.caption)
                                     .foregroundStyle(RTTheme.onSurfaceMuted)
                             }
@@ -44,7 +44,7 @@ struct PlayersView: View {
                     }
 
                     HStack {
-                        TextField("이름 입력", text: $newName)
+                        TextField(String(localized: "players_name_placeholder"), text: $newName)
                             .textFieldStyle(.roundedBorder)
                             .submitLabel(.done)
                             .focused($isNameFieldFocused)
@@ -70,9 +70,9 @@ struct PlayersView: View {
                     List {
                         if state.players.isEmpty {
                             VStack(alignment: .leading, spacing: 6) {
-                                Text("아직 참가자가 없습니다")
+                                Text(String(localized: "players_empty_title"))
                                     .foregroundStyle(.white)
-                                Text("플레이어를 추가하면 탈락 관리와 상금 계산이 바로 연결됩니다.")
+                                Text(String(localized: "players_empty_description"))
                                     .font(.caption)
                                     .foregroundStyle(RTTheme.onSurfaceMuted)
                             }
@@ -94,7 +94,7 @@ struct PlayersView: View {
                 }
             }
             .dismissKeyboardOnTap()
-            .navigationTitle("참가자 \(state.activePlayers.count)/\(state.players.count)")
+            .navigationTitle(String(format: String(localized: "players_title_format"), "\(state.activePlayers.count)", "\(state.players.count)"))
             .toolbarColorScheme(.dark, for: .navigationBar)
         }
     }
@@ -134,8 +134,8 @@ private struct PlayerRow: View {
                     .strikethrough(player.isEliminated)
                 let meta: String = {
                     var parts: [String] = []
-                    if player.rebuyCount > 0 { parts.append("리바이 \(player.rebuyCount)") }
-                    if let place = player.placement { parts.append("\(place)위") }
+                    if player.rebuyCount > 0 { parts.append(String(format: String(localized: "players_rebuy_format"), player.rebuyCount)) }
+                    if let place = player.placement { parts.append(String(format: String(localized: "players_place_format"), place)) }
                     return parts.joined(separator: " · ")
                 }()
                 if !meta.isEmpty {

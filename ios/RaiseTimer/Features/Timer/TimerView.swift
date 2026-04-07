@@ -91,7 +91,7 @@ struct TimerView: View {
 
             HStack(alignment: .center, spacing: 28) {
                 VStack(alignment: .leading, spacing: 14) {
-                    Text(state.isRunning ? "진행 중" : "준비됨")
+                    Text(state.isRunning ? String(localized: "timer_status_running") : String(localized: "timer_status_ready"))
                         .font(.title3.weight(.semibold))
                         .foregroundStyle(RTTheme.chipGoldSoft)
 
@@ -102,8 +102,8 @@ struct TimerView: View {
 
                     Text(
                         state.currentLevel.isBreak
-                        ? "Break"
-                        : "Blinds \(chips(state.currentLevel.smallBlind)) / \(chips(state.currentLevel.bigBlind))"
+                        ? String(localized: "timer_break")
+                        : String(format: String(localized: "timer_blinds_display_format"), chips(state.currentLevel.smallBlind), chips(state.currentLevel.bigBlind))
                     )
                     .font(.title3.weight(.medium))
                     .foregroundStyle(RTTheme.onSurface)
@@ -115,7 +115,7 @@ struct TimerView: View {
 
                 if let next = state.nextLevel {
                     VStack(alignment: .trailing, spacing: 8) {
-                        Text("다음 레벨")
+                        Text(String(localized: "timer_next_level"))
                             .font(.headline)
                             .foregroundStyle(RTTheme.onSurfaceMuted)
                         Text(nextLabel(next))
@@ -127,30 +127,6 @@ struct TimerView: View {
             }
 
             Spacer()
-
-            HStack(spacing: 16) {
-                RoundActionButton(systemName: "backward.fill", tint: RTTheme.surfaceHighlight) {
-                    store.previousLevel()
-                }
-
-                Button {
-                    store.toggleRunning()
-                } label: {
-                    Label(
-                        state.isRunning ? "일시정지" : "시작",
-                        systemImage: state.isRunning ? "pause.fill" : "play.fill"
-                    )
-                    .font(.title3.bold())
-                    .frame(maxWidth: .infinity, minHeight: 56)
-                }
-                .buttonStyle(.borderedProminent)
-                .tint(RTTheme.chipGold)
-                .foregroundStyle(RTTheme.feltGreenDark)
-
-                RoundActionButton(systemName: "forward.fill", tint: RTTheme.surfaceHighlight) {
-                    store.nextLevel()
-                }
-            }
         }
         .padding(.horizontal, 28)
         .padding(.vertical, 20)
@@ -168,7 +144,7 @@ struct TimerView: View {
     @ViewBuilder
     private func TimerHero(state: TournamentState, isFullscreen: Bool) -> some View {
         VStack(spacing: 10) {
-            Text(state.isRunning ? "진행 중" : "준비됨")
+            Text(state.isRunning ? String(localized: "timer_status_running") : String(localized: "timer_status_ready"))
                 .font(.caption.weight(.semibold))
                 .foregroundStyle(RTTheme.chipGoldSoft)
 
@@ -178,8 +154,8 @@ struct TimerView: View {
 
             Text(
                 state.currentLevel.isBreak
-                ? "Break"
-                : "Blinds \(chips(state.currentLevel.smallBlind)) / \(chips(state.currentLevel.bigBlind))"
+                ? String(localized: "timer_break")
+                : String(format: String(localized: "timer_blinds_display_format"), chips(state.currentLevel.smallBlind), chips(state.currentLevel.bigBlind))
             )
             .font(.subheadline.weight(.medium))
             .foregroundStyle(RTTheme.onSurface)
@@ -208,7 +184,7 @@ struct TimerView: View {
                 }
             } label: {
                 Label(
-                    state.isRunning ? "일시정지" : "시작",
+                    state.isRunning ? String(localized: "timer_action_pause") : String(localized: "timer_action_start"),
                     systemImage: state.isRunning ? "pause.fill" : "play.fill"
                 )
                 .font(.headline.bold())
@@ -226,7 +202,7 @@ struct TimerView: View {
         Button {
             store.reset()
         } label: {
-            Label("레벨 처음부터 리셋", systemImage: "arrow.counterclockwise")
+            Label(String(localized: "timer_reset_level"), systemImage: "arrow.counterclockwise")
                 .frame(maxWidth: .infinity)
         }
         .buttonStyle(.borderedProminent)
@@ -241,10 +217,10 @@ private struct TournamentSummaryCard: View {
     var body: some View {
         let payouts = PayoutCalculator.calculate(state)
         VStack(alignment: .leading, spacing: 6) {
-            Text("게임 종료 요약")
+            Text(String(localized: "timer_summary_title"))
                 .font(.headline)
                 .foregroundStyle(.white)
-            Text("우승 \(state.winner?.name ?? "미정")")
+            Text("\(String(localized: "timer_winner")) \(state.winner?.name ?? String(localized: "timer_undetermined"))")
                 .fontWeight(.bold)
                 .foregroundStyle(RTTheme.chipGold)
             ForEach(Array(state.finalStandings.prefix(3)), id: \.id) { player in
@@ -254,7 +230,7 @@ private struct TournamentSummaryCard: View {
                     guard idx >= 0, payouts.indices.contains(idx) else { return 0 }
                     return payouts[idx].amount
                 }()
-                Text("\(place)위 \(player.name) · \(formatted(amount))원")
+                Text(String(format: String(localized: "timer_place_format"), place, player.name, formatted(amount)))
                     .font(.caption)
                     .foregroundStyle(RTTheme.onSurfaceMuted)
             }
@@ -274,7 +250,7 @@ private struct LevelPill: View {
             Circle()
                 .fill(RTTheme.chipGoldSoft)
                 .frame(width: 10, height: 10)
-            Text(level.isBreak ? "휴식 시간" : "레벨 \(level.level)")
+            Text(level.isBreak ? String(localized: "timer_break_time") : String(format: String(localized: "timer_level_format"), level.level))
                 .font(.headline.bold())
                 .foregroundStyle(RTTheme.onSurface)
         }
@@ -322,9 +298,9 @@ private extension UIWindowScene {
 }
 
 private func nextLabel(_ level: BlindLevel) -> String {
-    if level.isBreak { return "휴식 \(level.durationSeconds / 60)분" }
+    if level.isBreak { return String(format: String(localized: "timer_break_minutes_format"), level.durationSeconds / 60) }
     let blinds = "\(chips(level.smallBlind)) / \(chips(level.bigBlind))"
-    if level.ante > 0 { return "\(blinds) · 앤티 \(chips(level.ante))" }
+    if level.ante > 0 { return "\(blinds) · \(String(format: String(localized: "timer_ante_format"), chips(level.ante)))" }
     return blinds
 }
 
@@ -339,7 +315,7 @@ private struct LevelHeader: View {
                 .fill(RTTheme.chipGoldSoft)
                 .frame(width: 10, height: 10)
             let level = state.currentLevel
-            Text(level.isBreak ? "휴식 시간" : "레벨 \(level.level)")
+            Text(level.isBreak ? String(localized: "timer_break_time") : String(format: String(localized: "timer_level_format"), level.level))
                 .font(.title2.bold())
                 .foregroundStyle(RTTheme.onSurface)
             Spacer()
@@ -362,8 +338,8 @@ private struct QuickStats: View {
 
     var body: some View {
         HStack(spacing: 10) {
-            InfoCard(label: "남은 인원", value: "\(state.activePlayers.count)/\(state.players.count)")
-            InfoCard(label: "엔트리", value: "\(state.totalBuyInsAndRebuys)")
+            InfoCard(label: String(localized: "timer_remaining_players"), value: "\(state.activePlayers.count)/\(state.players.count)")
+            InfoCard(label: String(localized: "timer_entries"), value: "\(state.totalBuyInsAndRebuys)")
         }
     }
 }
@@ -392,16 +368,16 @@ private struct CurrentBlindsCard: View {
     let level: BlindLevel
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text("현재 블라인드")
+            Text(String(localized: "timer_current_blinds"))
                 .font(.caption)
                 .foregroundStyle(RTTheme.onSurfaceMuted)
             Text(level.isBreak
-                 ? "휴식"
+                 ? String(localized: "timer_break")
                  : "\(chips(level.smallBlind)) / \(chips(level.bigBlind))")
                 .font(.system(size: 32, weight: .semibold))
                 .foregroundStyle(RTTheme.onSurface)
             if level.ante > 0 {
-                Text("앤티 \(chips(level.ante))")
+                Text(String(format: String(localized: "timer_ante_format"), chips(level.ante)))
                     .foregroundStyle(RTTheme.onSurfaceMuted)
             }
         }
@@ -416,7 +392,7 @@ private struct NextBlindsCard: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 4) {
-                Text("다음 레벨")
+                Text(String(localized: "timer_next_level"))
                     .font(.caption)
                     .foregroundStyle(RTTheme.onSurfaceMuted)
                 Text(nextLabel)
@@ -430,9 +406,9 @@ private struct NextBlindsCard: View {
     }
 
     private var nextLabel: String {
-        if level.isBreak { return "휴식 \(level.durationSeconds / 60)분" }
+        if level.isBreak { return String(format: String(localized: "timer_break_minutes_format"), level.durationSeconds / 60) }
         let blinds = "\(chips(level.smallBlind)) / \(chips(level.bigBlind))"
-        if level.ante > 0 { return "\(blinds) · 앤티 \(chips(level.ante))" }
+        if level.ante > 0 { return "\(blinds) · \(String(format: String(localized: "timer_ante_format"), chips(level.ante)))" }
         return blinds
     }
 }

@@ -17,12 +17,14 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -45,11 +47,13 @@ import com.jiny.raisetimer.domain.PayoutCalculator
 import com.jiny.raisetimer.domain.model.Player
 import com.jiny.raisetimer.ui.clearFocusOnTap
 import com.jiny.raisetimer.ui.TournamentViewModel
-import com.jiny.raisetimer.ui.theme.SurfaceElevated
-import com.jiny.raisetimer.ui.theme.SurfaceHighlight
+import androidx.compose.ui.res.stringResource
+import com.jiny.raisetimer.R
+import com.jiny.raisetimer.ui.theme.LocalRaiseTimerPalette
 
 @Composable
 fun PlayersScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues) {
+    val palette = LocalRaiseTimerPalette.current
     val state by viewModel.state.collectAsStateWithLifecycle()
     val payouts = PayoutCalculator.calculate(state)
     var newName by remember { mutableStateOf("") }
@@ -67,20 +71,20 @@ fun PlayersScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(
-                text = "참가자",
+                text = stringResource(R.string.players_title),
                 style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onBackground,
+                color = palette.onSurface,
                 modifier = Modifier.weight(1f),
             )
             Text(
                 text = "${state.activePlayers.size} / ${state.players.size}",
-                color = MaterialTheme.colorScheme.primary,
+                color = palette.chipGold,
                 fontWeight = FontWeight.Bold,
             )
         }
 
         Surface(
-            color = SurfaceElevated,
+            color = palette.surfaceElevated,
             shape = MaterialTheme.shapes.large,
             modifier = Modifier.fillMaxWidth(),
         ) {
@@ -92,22 +96,22 @@ fun PlayersScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues)
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Column {
-                    Text("총 엔트리", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.players_total_entries), color = palette.onSurfaceMuted)
                     Text(
                         text = "${state.totalBuyInsAndRebuys}",
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = palette.onSurface,
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.titleLarge,
                     )
                 }
                 Column(horizontalAlignment = Alignment.End) {
                     Text(
-                        text = if (rebuyAllowed) "리바이 가능" else "리바이 닫힘",
-                        color = if (rebuyAllowed) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                        text = if (rebuyAllowed) stringResource(R.string.players_rebuy_available) else stringResource(R.string.players_rebuy_closed),
+                        color = if (rebuyAllowed) palette.chipGold else palette.onSurfaceMuted,
                     )
                     Text(
-                        text = "상금 ${"%,d".format(state.totalPrizePool)}원",
-                        color = MaterialTheme.colorScheme.onSurface,
+                        text = stringResource(R.string.players_prize_format, "%,d".format(state.totalPrizePool)),
+                        color = palette.onSurface,
                     )
                 }
             }
@@ -115,7 +119,7 @@ fun PlayersScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues)
 
         if (state.isTournamentComplete) {
             Surface(
-                color = SurfaceHighlight,
+                color = palette.surfaceHighlight,
                 shape = MaterialTheme.shapes.large,
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -123,17 +127,17 @@ fun PlayersScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues)
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(6.dp),
                 ) {
-                    Text("게임 종료 요약", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onSurface)
+                    Text(stringResource(R.string.timer_summary_title), fontWeight = FontWeight.Bold, color = palette.onSurface)
                     Text(
-                        text = "우승 ${state.winner?.name ?: "미정"}",
-                        color = MaterialTheme.colorScheme.primary,
+                        text = "${stringResource(R.string.timer_winner)} ${state.winner?.name ?: stringResource(R.string.timer_undetermined)}",
+                        color = palette.chipGold,
                         fontWeight = FontWeight.Bold,
                     )
                     state.finalStandings.take(3).forEach { player ->
                         val amount = player.placement?.let { payouts.getOrNull(it - 1)?.amount } ?: 0
                         Text(
-                            text = "${player.placement ?: "-"}위 ${player.name} · ${"%,d".format(amount)}원",
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            text = stringResource(R.string.timer_place_format, player.placement ?: 0, player.name, "%,d".format(amount)),
+                            color = palette.onSurfaceMuted,
                         )
                     }
                 }
@@ -148,7 +152,7 @@ fun PlayersScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues)
             OutlinedTextField(
                 value = newName,
                 onValueChange = { newName = it },
-                placeholder = { Text("이름 입력") },
+                placeholder = { Text(stringResource(R.string.players_name_placeholder)) },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
@@ -160,6 +164,7 @@ fun PlayersScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues)
                         }
                     }
                 ),
+                colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = palette.chipGold, cursorColor = palette.chipGold),
                 modifier = Modifier.weight(1f),
             )
             Button(
@@ -169,6 +174,7 @@ fun PlayersScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues)
                     focusManager.clearFocus(force = true)
                 },
                 enabled = canAddPlayer,
+                colors = ButtonDefaults.buttonColors(containerColor = palette.chipGold, contentColor = palette.feltGreenDark),
             ) {
                 Icon(Icons.Filled.Add, contentDescription = null)
             }
@@ -181,7 +187,7 @@ fun PlayersScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues)
             if (state.players.isEmpty()) {
                 item {
                     Surface(
-                        color = SurfaceHighlight,
+                        color = palette.surfaceHighlight,
                         shape = MaterialTheme.shapes.large,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -193,10 +199,10 @@ fun PlayersScreen(viewModel: TournamentViewModel, contentPadding: PaddingValues)
                                 .padding(16.dp),
                             verticalArrangement = Arrangement.Center,
                         ) {
-                            Text("아직 참가자가 없습니다", color = MaterialTheme.colorScheme.onSurface)
+                            Text(stringResource(R.string.players_empty_title), color = palette.onSurface)
                             Text(
-                                text = "이름을 추가하면 탈락 관리와 상금 계산이 바로 연결됩니다.",
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                text = stringResource(R.string.players_empty_description),
+                                color = palette.onSurfaceMuted,
                             )
                         }
                     }
@@ -227,12 +233,13 @@ private fun PlayerRow(
     onRebuyMinus: () -> Unit,
     onDelete: () -> Unit,
 ) {
+    val palette = LocalRaiseTimerPalette.current
     Card(
         colors = CardDefaults.cardColors(
             containerColor = if (player.isEliminated)
-                SurfaceElevated
+                palette.surface
             else
-                SurfaceHighlight
+                palette.surfaceHighlight
         ),
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -246,20 +253,20 @@ private fun PlayerRow(
                 Text(
                     text = player.name,
                     fontWeight = FontWeight.SemiBold,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = palette.onSurface,
                     textDecoration = if (player.isEliminated) TextDecoration.LineThrough else null,
                 )
                 val meta = buildString {
-                    if (player.rebuyCount > 0) append("리바이 ${player.rebuyCount}")
+                    if (player.rebuyCount > 0) append(stringResource(R.string.players_rebuy_format, player.rebuyCount))
                     if (player.placement != null) {
                         if (isNotEmpty()) append(" · ")
-                        append("${player.placement}위")
+                        append(stringResource(R.string.players_place_format, player.placement!!))
                     }
                 }
                 if (meta.isNotEmpty()) {
                     Text(
                         text = meta,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = palette.onSurfaceMuted,
                         style = MaterialTheme.typography.labelMedium,
                     )
                 }
@@ -271,22 +278,22 @@ private fun PlayerRow(
                         onClick = onRebuyMinus,
                         enabled = player.rebuyCount > 0,
                     ) { Text("-") }
-                    Text("${player.rebuyCount}", color = MaterialTheme.colorScheme.onSurface)
+                    Text("${player.rebuyCount}", color = palette.onSurface)
                     TextButton(onClick = onRebuyPlus) { Text("+") }
                 }
             }
 
             if (player.isEliminated) {
                 IconButton(onClick = onRevive) {
-                    Icon(Icons.AutoMirrored.Filled.Undo, contentDescription = "되살리기")
+                    Icon(Icons.AutoMirrored.Filled.Undo, contentDescription = stringResource(R.string.players_action_revive), tint = palette.chipGold)
                 }
             } else {
                 IconButton(onClick = onEliminate) {
-                    Icon(Icons.Filled.Close, contentDescription = "탈락")
+                    Icon(Icons.Filled.Close, contentDescription = stringResource(R.string.players_action_eliminate), tint = palette.chipRed)
                 }
             }
             IconButton(onClick = onDelete) {
-                Icon(Icons.Filled.Delete, contentDescription = "삭제")
+                Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.players_action_delete), tint = palette.chipRed)
             }
         }
     }

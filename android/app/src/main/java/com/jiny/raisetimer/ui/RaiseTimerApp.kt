@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.view.WindowManager
@@ -26,6 +27,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
+import com.jiny.raisetimer.R
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -48,12 +51,12 @@ import com.jiny.raisetimer.ui.structure.StructureScreen
 import com.jiny.raisetimer.ui.timer.TimerScreen
 import com.jiny.raisetimer.ui.theme.LocalRaiseTimerPalette
 
-private sealed class Tab(val route: String, val label: String, val icon: ImageVector) {
-    data object Timer : Tab("timer", "타이머", Icons.Filled.Timer)
-    data object Players : Tab("players", "플레이어", Icons.Filled.Groups)
-    data object Structure : Tab("structure", "블라인드", Icons.Filled.Tune)
-    data object Payout : Tab("payout", "상금", Icons.Filled.AttachMoney)
-    data object Settings : Tab("settings", "설정", Icons.Filled.Palette)
+private sealed class Tab(val route: String, val labelRes: Int, val icon: ImageVector) {
+    data object Timer : Tab("timer", R.string.tab_timer, Icons.Filled.Timer)
+    data object Players : Tab("players", R.string.tab_players, Icons.Filled.Groups)
+    data object Structure : Tab("structure", R.string.tab_structure, Icons.Filled.Tune)
+    data object Payout : Tab("payout", R.string.tab_payout, Icons.Filled.AttachMoney)
+    data object Settings : Tab("settings", R.string.tab_settings, Icons.Filled.Palette)
 }
 
 private val tabs = listOf(Tab.Timer, Tab.Players, Tab.Structure, Tab.Payout, Tab.Settings)
@@ -99,20 +102,23 @@ fun RaiseTimerApp(viewModel: TournamentViewModel = viewModel()) {
     val isFullscreenTimer = currentDestination?.route == TimerFullscreenRoute
     DisposableEffect(isFullscreenTimer, view) {
         val activity = view.context as? Activity
-        if (!isFullscreenTimer) {
+        if (isFullscreenTimer) {
+            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
+        } else {
             activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
         }
         onDispose {
-            if (!isFullscreenTimer) {
-                activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-            }
+            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
         }
     }
 
     Scaffold(
+        containerColor = palette.feltGreenDark,
         bottomBar = {
             if (isFullscreenTimer) return@Scaffold
-            NavigationBar {
+            NavigationBar(
+                containerColor = palette.feltGreenDark,
+            ) {
                 tabs.forEach { tab ->
                     val selected = currentDestination
                         ?.hierarchy
@@ -127,8 +133,15 @@ fun RaiseTimerApp(viewModel: TournamentViewModel = viewModel()) {
                                 restoreState = true
                             }
                         },
-                        icon = { Icon(tab.icon, contentDescription = tab.label) },
-                        label = { Text(tab.label) },
+                        icon = { Icon(tab.icon, contentDescription = stringResource(tab.labelRes)) },
+                        label = { Text(stringResource(tab.labelRes)) },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = palette.chipGold,
+                            selectedTextColor = palette.chipGold,
+                            unselectedIconColor = palette.onSurfaceMuted,
+                            unselectedTextColor = palette.onSurfaceMuted,
+                            indicatorColor = palette.chipGold.copy(alpha = 0.12f),
+                        ),
                     )
                 }
             }
@@ -178,18 +191,11 @@ private fun TimerFullscreenRoute(
         val window = activity?.window
         val controller = window?.let { WindowCompat.getInsetsController(it, it.decorView) }
         val previousBehavior = controller?.systemBarsBehavior
-        val previousOrientation = activity?.requestedOrientation
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         controller?.systemBarsBehavior =
             WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         controller?.hide(WindowInsetsCompat.Type.systemBars())
 
         onDispose {
-            if (previousOrientation != null) {
-                activity.requestedOrientation = previousOrientation
-            } else {
-                activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-            }
             controller?.show(WindowInsetsCompat.Type.systemBars())
             if (previousBehavior != null) {
                 controller.systemBarsBehavior = previousBehavior
@@ -204,8 +210,8 @@ private fun TimerFullscreenRoute(
                 Brush.verticalGradient(
                     listOf(
                         palette.timerGradient.first().copy(alpha = 0.16f),
-                        palette.timerGradient.getOrElse(1) { androidx.compose.material3.MaterialTheme.colorScheme.background },
-                        palette.timerGradient.getOrElse(2) { androidx.compose.material3.MaterialTheme.colorScheme.surface },
+                        palette.timerGradient.getOrElse(1) { palette.feltGreenDark },
+                        palette.timerGradient.getOrElse(2) { palette.feltGreen },
                     )
                 )
             )
