@@ -8,7 +8,7 @@ import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.AvTimer
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -45,25 +45,30 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.jiny.raisetimer.ui.payout.PayoutScreen
-import com.jiny.raisetimer.ui.players.PlayersScreen
 import com.jiny.raisetimer.ui.settings.SettingsScreen
-import com.jiny.raisetimer.ui.structure.StructureScreen
+import com.jiny.raisetimer.ui.setup.TournamentSetupScreen
 import com.jiny.raisetimer.ui.timer.TimerScreen
+import com.jiny.raisetimer.ui.turntimer.TurnTimerScreen
 import com.jiny.raisetimer.ui.theme.LocalRaiseTimerPalette
+import com.jiny.raisetimer.ui.turntimer.TurnTimerViewModel
 
 private sealed class Tab(val route: String, val labelRes: Int, val icon: ImageVector) {
     data object Timer : Tab("timer", R.string.tab_timer, Icons.Filled.Timer)
-    data object Players : Tab("players", R.string.tab_players, Icons.Filled.Groups)
-    data object Structure : Tab("structure", R.string.tab_structure, Icons.Filled.Tune)
+    data object Setup : Tab("setup", R.string.tab_setup, Icons.Filled.Groups)
+    data object TurnTimer : Tab("turn_timer", R.string.tab_turn_timer, Icons.Filled.AvTimer)
     data object Payout : Tab("payout", R.string.tab_payout, Icons.Filled.AttachMoney)
     data object Settings : Tab("settings", R.string.tab_settings, Icons.Filled.Palette)
 }
 
-private val tabs = listOf(Tab.Timer, Tab.Players, Tab.Structure, Tab.Payout, Tab.Settings)
+private val tabs = listOf(Tab.Timer, Tab.Setup, Tab.TurnTimer, Tab.Payout, Tab.Settings)
 private const val TimerFullscreenRoute = "timer_fullscreen"
+private const val TurnTimerFullscreenRoute = "turn_timer_fullscreen"
 
 @Composable
-fun RaiseTimerApp(viewModel: TournamentViewModel = viewModel()) {
+fun RaiseTimerApp(
+    viewModel: TournamentViewModel = viewModel(),
+    turnTimerViewModel: TurnTimerViewModel = viewModel(),
+) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
@@ -100,9 +105,11 @@ fun RaiseTimerApp(viewModel: TournamentViewModel = viewModel()) {
     }
 
     val isFullscreenTimer = currentDestination?.route == TimerFullscreenRoute
-    DisposableEffect(isFullscreenTimer, view) {
+    val isFullscreenTurnTimer = currentDestination?.route == TurnTimerFullscreenRoute
+    val isAnyFullscreen = isFullscreenTimer || isFullscreenTurnTimer
+    DisposableEffect(isAnyFullscreen, view) {
         val activity = view.context as? Activity
-        if (isFullscreenTimer) {
+        if (isAnyFullscreen) {
             activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         } else {
             activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
@@ -115,7 +122,7 @@ fun RaiseTimerApp(viewModel: TournamentViewModel = viewModel()) {
     Scaffold(
         containerColor = palette.feltGreenDark,
         bottomBar = {
-            if (isFullscreenTimer) return@Scaffold
+            if (isAnyFullscreen) return@Scaffold
             NavigationBar(
                 containerColor = palette.feltGreenDark,
             ) {
@@ -170,8 +177,21 @@ fun RaiseTimerApp(viewModel: TournamentViewModel = viewModel()) {
                     onClose = { navController.popBackStack() },
                 )
             }
-            composable(Tab.Players.route) { PlayersScreen(viewModel, PaddingValues()) }
-            composable(Tab.Structure.route) { StructureScreen(viewModel, PaddingValues()) }
+            composable(Tab.Setup.route) { TournamentSetupScreen(viewModel, PaddingValues()) }
+            composable(Tab.TurnTimer.route) {
+                TurnTimerScreen(
+                    contentPadding = PaddingValues(),
+                    turnTimerViewModel = turnTimerViewModel,
+                    onToggleFullscreen = { navController.navigate(TurnTimerFullscreenRoute) },
+                )
+            }
+            composable(TurnTimerFullscreenRoute) {
+                TurnTimerFullscreenRoute(
+                    tournamentViewModel = viewModel,
+                    turnTimerViewModel = turnTimerViewModel,
+                    onClose = { navController.popBackStack() },
+                )
+            }
             composable(Tab.Payout.route) { PayoutScreen(viewModel, PaddingValues()) }
             composable(Tab.Settings.route) { SettingsScreen(viewModel, PaddingValues()) }
         }
@@ -221,6 +241,56 @@ private fun TimerFullscreenRoute(
             contentPadding = PaddingValues(),
             isFullscreen = true,
             onToggleFullscreen = onClose,
+        )
+    }
+}
+
+@Composable
+private fun TurnTimerFullscreenRoute(
+    tournamentViewModel: TournamentViewModel,
+    turnTimerViewModel: TurnTimerViewModel,
+    onClose: () -> Unit,
+) {
+    val context = LocalContext.current
+    val activity = context as? Activity
+    val palette = LocalRaiseTimerPalette.current
+    val tournamentState by tournamentViewModel.state.collectAsStateWithLifecycle()
+
+    DisposableEffect(activity) {
+        val window = activity?.window
+        val controller = window?.let { WindowCompat.getInsetsController(it, it.decorView) }
+        val previousBehavior = controller?.systemBarsBehavior
+        controller?.systemBarsBehavior =
+            WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        controller?.hide(WindowInsetsCompat.Type.systemBars())
+
+        onDispose {
+            controller?.show(WindowInsetsCompat.Type.systemBars())
+            if (previousBehavior != null) {
+                controller.systemBarsBehavior = previousBehavior
+            }
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        palette.timerGradient.first().copy(alpha = 0.16f),
+                        palette.timerGradient.getOrElse(1) { palette.feltGreenDark },
+                        palette.timerGradient.getOrElse(2) { palette.feltGreen },
+                    )
+                )
+            )
+    ) {
+        TurnTimerScreen(
+            contentPadding = PaddingValues(),
+            turnTimerViewModel = turnTimerViewModel,
+            isFullscreen = true,
+            onToggleFullscreen = onClose,
+            logoFileName = tournamentState.config.fullscreenLogoFileName,
         )
     }
 }

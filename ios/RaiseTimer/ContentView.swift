@@ -3,7 +3,9 @@ import UIKit
 
 struct ContentView: View {
     @Environment(TournamentStore.self) private var store
+    @Environment(TurnTimerEngine.self) private var turnTimerEngine
     @State private var isTimerFullscreen = false
+    @State private var isTurnTimerFullscreen = false
 
     var body: some View {
         let themePreset = store.state.config.themePreset
@@ -20,11 +22,15 @@ struct ContentView: View {
             )
                 .tabItem { Label(String(localized: "tab_timer"), systemImage: "timer") }
 
-            PlayersView()
-                .tabItem { Label(String(localized: "tab_players"), systemImage: "person.3.fill") }
+            TournamentSetupView()
+                .tabItem { Label(String(localized: "tab_setup"), systemImage: "person.3.fill") }
 
-            StructureView()
-                .tabItem { Label(String(localized: "tab_structure"), systemImage: "slider.horizontal.3") }
+            TurnTimerView(
+                onToggleFullscreen: {
+                    isTurnTimerFullscreen = true
+                }
+            )
+                .tabItem { Label(String(localized: "tab_turn_timer"), systemImage: "stopwatch") }
 
             PayoutView()
                 .tabItem { Label(String(localized: "tab_payout"), systemImage: "dollarsign.circle.fill") }
@@ -46,6 +52,18 @@ struct ContentView: View {
             )
             .id("fullscreen-theme-\(themePreset.rawValue)")
             .environment(store)
+            .statusBarHidden(true)
+        }
+        .fullScreenCover(isPresented: $isTurnTimerFullscreen) {
+            TurnTimerView(
+                isFullscreen: true,
+                onToggleFullscreen: {
+                    isTurnTimerFullscreen = false
+                }
+            )
+            .id("turn-fullscreen-theme-\(themePreset.rawValue)")
+            .environment(store)
+            .environment(turnTimerEngine)
             .statusBarHidden(true)
         }
     }

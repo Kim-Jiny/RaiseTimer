@@ -16,12 +16,14 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
 struct RaiseTimerApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var store = TournamentStore()
+    @State private var turnTimerEngine = TurnTimerEngine()
     @Environment(\.scenePhase) private var scenePhase
 
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environment(store)
+                .environment(turnTimerEngine)
                 .onAppear {
                     // Apply initial screen-awake state (e.g. when restoring a running
                     // tournament across a cold launch).

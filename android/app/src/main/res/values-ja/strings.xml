@@ -4,6 +4,8 @@
     <string name="tab_timer">タイマー</string>
     <string name="tab_players">プレイヤー</string>
     <string name="tab_structure">ブラインド</string>
+    <string name="tab_setup">設定</string>
+    <string name="tab_turn_timer">ターン</string>
     <string name="tab_payout">賞金</string>
     <string name="tab_settings">設定</string>
 
@@ -112,6 +114,13 @@
     <string name="settings_delete">削除</string>
     <string name="settings_collapse">閉じる</string>
     <string name="settings_expand">開く</string>
+
+    <!-- Turn Timer -->
+    <string name="turn_timer_title">ターンタイマー</string>
+    <string name="turn_timer_start">スタート</string>
+    <string name="turn_timer_pause">一時停止</string>
+    <string name="turn_timer_reset">リセット</string>
+    <string name="turn_timer_times_up">タイムアップ！</string>
 
     <!-- Common -->
     <string name="default_tournament_name">デフォルトトーナメント</string>

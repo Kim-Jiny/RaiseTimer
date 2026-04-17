@@ -4,6 +4,8 @@
     <string name="tab_timer">Timer</string>
     <string name="tab_players">Players</string>
     <string name="tab_structure">Blinds</string>
+    <string name="tab_setup">Setup</string>
+    <string name="tab_turn_timer">Turn</string>
     <string name="tab_payout">Payout</string>
     <string name="tab_settings">Settings</string>
 
@@ -112,6 +114,13 @@
     <string name="settings_delete">Delete</string>
     <string name="settings_collapse">Collapse</string>
     <string name="settings_expand">Expand</string>
+
+    <!-- Turn Timer -->
+    <string name="turn_timer_title">Turn Timer</string>
+    <string name="turn_timer_start">Start</string>
+    <string name="turn_timer_pause">Pause</string>
+    <string name="turn_timer_reset">Reset</string>
+    <string name="turn_timer_times_up">Time\'s Up!</string>
 
     <!-- Common -->
     <string name="default_tournament_name">Default Tournament</string>

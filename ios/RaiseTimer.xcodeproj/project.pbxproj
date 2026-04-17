@@ -22,6 +22,9 @@
 		CF0388461F7EAE897D957A0E /* RaiseTimerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDE93F4F60FB4AE3C00A3EDA /* RaiseTimerApp.swift */; };
 		FE881669B78A8B67B107184F /* TournamentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F20C8ABB641D9482DBC622E /* TournamentStore.swift */; };
 		A1B2C3D4E5F6A7B8C9D0E1F2 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F7A8B9C0D1E2 /* Localizable.xcstrings */; };
+		AA11BB22CC33DD44EE55FF66 /* TournamentSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF67 /* TournamentSetupView.swift */; };
+		BB22CC33DD44EE55FF660011 /* TurnTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB22CC33DD44EE55FF660012 /* TurnTimerView.swift */; };
+		DD33EE44FF550066AA770088 /* TurnTimerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD33EE44FF550066AA770089 /* TurnTimerEngine.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +44,9 @@
 		EDE93F4F60FB4AE3C00A3EDA /* RaiseTimerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseTimerApp.swift; sourceTree = "<group>"; };
 		EF80207ABD9AEB37332BC81C /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		F1A2B3C4D5E6F7A8B9C0D1E2 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF67 /* TournamentSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TournamentSetupView.swift; sourceTree = "<group>"; };
+		BB22CC33DD44EE55FF660012 /* TurnTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnTimerView.swift; sourceTree = "<group>"; };
+		DD33EE44FF550066AA770089 /* TurnTimerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnTimerEngine.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -60,6 +66,14 @@
 			path = Payout;
 			sourceTree = "<group>";
 		};
+		CC44DD55EE66FF770088AA99 /* TurnTimer */ = {
+			isa = PBXGroup;
+			children = (
+				BB22CC33DD44EE55FF660012 /* TurnTimerView.swift */,
+			);
+			path = TurnTimer;
+			sourceTree = "<group>";
+		};
 		6BF5F8E0986D42909054E18E /* Features */ = {
 			isa = PBXGroup;
 			children = (
@@ -68,6 +82,7 @@
 				0AB4AB2FF2444593B8229542 /* Settings */,
 				AD82C0E8D69FC3233635F9DF /* Structure */,
 				FE368D23115541ABE4DE5D8A /* Timer */,
+				CC44DD55EE66FF770088AA99 /* TurnTimer */,
 			);
 			path = Features;
 			sourceTree = "<group>";
@@ -114,6 +129,7 @@
 			isa = PBXGroup;
 			children = (
 				99F5F819D015979D003C502D /* PlayersView.swift */,
+				AA11BB22CC33DD44EE55FF67 /* TournamentSetupView.swift */,
 			);
 			path = Players;
 			sourceTree = "<group>";
@@ -134,6 +150,7 @@
 				14D0E8137A8D4C3A9B4E1F10 /* LogoStore.swift */,
 				3A8064A2FE4CE3EBD95F77D2 /* SoundPlayer.swift */,
 				8F20C8ABB641D9482DBC622E /* TournamentStore.swift */,
+				DD33EE44FF550066AA770089 /* TurnTimerEngine.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -227,6 +244,9 @@
 				009E20A4E109B451D593F99C /* TimerEngine.swift in Sources */,
 				84107837CC7F49C696E4B480 /* TimerView.swift in Sources */,
 				FE881669B78A8B67B107184F /* TournamentStore.swift in Sources */,
+				AA11BB22CC33DD44EE55FF66 /* TournamentSetupView.swift in Sources */,
+				BB22CC33DD44EE55FF660011 /* TurnTimerView.swift in Sources */,
+				DD33EE44FF550066AA770088 /* TurnTimerEngine.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

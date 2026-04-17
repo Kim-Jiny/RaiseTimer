@@ -6,6 +6,8 @@
     <string name="tab_timer">타이머</string>
     <string name="tab_players">플레이어</string>
     <string name="tab_structure">블라인드</string>
+    <string name="tab_setup">설정</string>
+    <string name="tab_turn_timer">턴 타이머</string>
     <string name="tab_payout">상금</string>
     <string name="tab_settings">설정</string>
 
@@ -114,6 +116,13 @@
     <string name="settings_delete">삭제</string>
     <string name="settings_collapse">접기</string>
     <string name="settings_expand">열기</string>
+
+    <!-- Turn Timer -->
+    <string name="turn_timer_title">턴 타이머</string>
+    <string name="turn_timer_start">시작</string>
+    <string name="turn_timer_pause">일시정지</string>
+    <string name="turn_timer_reset">리셋</string>
+    <string name="turn_timer_times_up">시간 초과!</string>
 
     <!-- Common -->
     <string name="default_tournament_name">기본 토너먼트</string>
