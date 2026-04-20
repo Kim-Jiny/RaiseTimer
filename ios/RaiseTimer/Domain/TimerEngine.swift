@@ -84,16 +84,17 @@ enum TimerEngine {
     }
 
     static func nextLevel(_ state: TournamentState, now: Double) -> TournamentState {
+        guard !state.config.levels.isEmpty else { return state }
         var copy = state
         let clamped = min(state.currentLevelIndex + 1, state.config.levels.count - 1)
         copy.currentLevelIndex = clamped
         copy.remainingSeconds = state.config.levels[clamped].durationSeconds
-        // If running, reset the tick anchor so the fresh level starts counting from now.
         copy.lastTickAt = state.isRunning ? now : nil
         return copy
     }
 
     static func previousLevel(_ state: TournamentState, now: Double) -> TournamentState {
+        guard !state.config.levels.isEmpty else { return state }
         var copy = state
         let clamped = max(state.currentLevelIndex - 1, 0)
         copy.currentLevelIndex = clamped

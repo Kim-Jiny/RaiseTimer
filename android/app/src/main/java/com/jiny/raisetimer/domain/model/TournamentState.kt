@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class TournamentState(
     val config: TournamentConfig = TournamentConfig(),
     val currentLevelIndex: Int = 0,
-    val remainingSeconds: Int = TournamentConfig().levels.first().durationSeconds,
+    val remainingSeconds: Int = TournamentConfig().levels.firstOrNull()?.durationSeconds ?: 0,
     val isRunning: Boolean = false,
     val players: List<Player> = emptyList(),
     /**

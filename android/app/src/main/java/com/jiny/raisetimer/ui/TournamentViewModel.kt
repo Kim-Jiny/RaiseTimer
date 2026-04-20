@@ -229,13 +229,17 @@ class TournamentViewModel(app: Application) : AndroidViewModel(app) {
     fun updateConfig(transform: (TournamentConfig) -> TournamentConfig) {
         val current = _state.value
         val newConfig = transform(current.config)
-        val safeIndex = current.currentLevelIndex.coerceIn(0, newConfig.levels.lastIndex)
-        val newDuration = newConfig.levels[safeIndex].durationSeconds
-        val newState = current.copy(
-            config = newConfig,
-            currentLevelIndex = safeIndex,
-            remainingSeconds = current.remainingSeconds.coerceAtMost(newDuration).coerceAtLeast(0),
-        )
+        val newState = if (newConfig.levels.isEmpty()) {
+            current.copy(config = newConfig, currentLevelIndex = 0, remainingSeconds = 0)
+        } else {
+            val safeIndex = current.currentLevelIndex.coerceIn(0, newConfig.levels.lastIndex)
+            val newDuration = newConfig.levels[safeIndex].durationSeconds
+            current.copy(
+                config = newConfig,
+                currentLevelIndex = safeIndex,
+                remainingSeconds = current.remainingSeconds.coerceAtMost(newDuration).coerceAtLeast(0),
+            )
+        }
         markLocalMutation()
         _state.value = newState
         persist()
@@ -356,7 +360,6 @@ class TournamentViewModel(app: Application) : AndroidViewModel(app) {
         val newState = TournamentState(
             config = TournamentConfig(
                 themePreset = config.themePreset,
-                fullscreenLogoFileName = config.fullscreenLogoFileName,
                 savedBlindStructures = config.savedBlindStructures,
             )
         )

@@ -3,7 +3,6 @@ import UIKit
 
 enum LogoStore {
     private static let directoryName = "Logos"
-    private static let fileName = "fullscreen_logo.png"
 
     static func saveImageData(_ data: Data) -> String? {
         guard let image = UIImage(data: data),
@@ -11,7 +10,8 @@ enum LogoStore {
             return nil
         }
 
-        let url = logoURL()
+        let uniqueName = "logo_\(UUID().uuidString).png"
+        let url = logoURL(fileName: uniqueName)
         do {
             try FileManager.default.createDirectory(
                 at: url.deletingLastPathComponent(),
@@ -19,7 +19,7 @@ enum LogoStore {
                 attributes: nil
             )
             try compressed.write(to: url, options: .atomic)
-            return url.lastPathComponent
+            return uniqueName
         } catch {
             return nil
         }
@@ -45,7 +45,7 @@ enum LogoStore {
         }.value
     }
 
-    private static func logoURL(fileName: String = fileName) -> URL {
+    private static func logoURL(fileName: String) -> URL {
         let baseDirectory = (try? FileManager.default.url(
             for: .applicationSupportDirectory,
             in: .userDomainMask,

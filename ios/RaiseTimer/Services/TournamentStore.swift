@@ -187,9 +187,14 @@ final class TournamentStore {
         var cfg = state.config
         transform(&cfg)
         state.config = cfg
-        let clamped = min(max(state.currentLevelIndex, 0), cfg.levels.count - 1)
-        state.currentLevelIndex = clamped
-        state.remainingSeconds = min(state.remainingSeconds, cfg.levels[clamped].durationSeconds)
+        if cfg.levels.isEmpty {
+            state.currentLevelIndex = 0
+            state.remainingSeconds = 0
+        } else {
+            let clamped = min(max(state.currentLevelIndex, 0), cfg.levels.count - 1)
+            state.currentLevelIndex = clamped
+            state.remainingSeconds = min(state.remainingSeconds, cfg.levels[clamped].durationSeconds)
+        }
         persist()
     }
 
@@ -314,7 +319,6 @@ final class TournamentStore {
         let config = state.config
         var newConfig = TournamentConfig()
         newConfig.themePreset = config.themePreset
-        newConfig.fullscreenLogoFileName = config.fullscreenLogoFileName
         newConfig.savedBlindStructures = config.savedBlindStructures
         let newState = TournamentState(config: newConfig)
         let slot = TournamentSlotSnapshot(

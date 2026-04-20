@@ -17,7 +17,6 @@ import java.io.FileOutputStream
 
 object LogoStorage {
     private const val DirectoryName = "logos"
-    private const val FileName = "fullscreen_logo.png"
 
     fun saveFromUri(context: Context, uri: Uri): String? {
         val bitmap = context.contentResolver.openInputStream(uri)?.use(BitmapFactory::decodeStream) ?: return null
@@ -54,7 +53,8 @@ object LogoStorage {
 
     private fun writeBitmap(context: Context, bitmap: Bitmap): String? {
         val directory = File(context.filesDir, DirectoryName).apply { mkdirs() }
-        val file = File(directory, FileName)
+        val uniqueName = "logo_${java.util.UUID.randomUUID()}.png"
+        val file = File(directory, uniqueName)
         return runCatching {
             FileOutputStream(file).use { output ->
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
