@@ -183,6 +183,9 @@ private fun FullscreenTimerContent(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 LevelPill(state)
+                FullscreenStatPill(
+                    text = "${state.totalBuyInsAndRebuys} ${stringResource(R.string.timer_entries)} · ${stringResource(R.string.payout_amount_format, "%,d".format(state.totalPrizePool))}",
+                )
                 Spacer(Modifier.weight(1f))
                 if (onClose != null) {
                     FilledIconButton(
@@ -326,6 +329,11 @@ private fun QuickStats(state: TournamentState) {
         InfoChip(
             label = stringResource(R.string.timer_entries),
             value = "${state.totalBuyInsAndRebuys}",
+            modifier = Modifier.weight(1f),
+        )
+        InfoChip(
+            label = stringResource(R.string.tab_payout),
+            value = stringResource(R.string.payout_amount_format, "%,d".format(state.totalPrizePool)),
             modifier = Modifier.weight(1f),
         )
     }
@@ -511,6 +519,23 @@ private fun LevelPill(state: TournamentState) {
                 fontWeight = FontWeight.Bold,
             )
         }
+    }
+}
+
+@Composable
+private fun FullscreenStatPill(text: String) {
+    val palette = LocalRaiseTimerPalette.current
+    Surface(
+        color = palette.surfaceElevated.copy(alpha = 0.92f),
+        shape = RoundedCornerShape(999.dp),
+    ) {
+        Text(
+            text = text,
+            color = palette.onSurfaceMuted,
+            style = MaterialTheme.typography.labelMedium,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+        )
     }
 }
 

@@ -74,6 +74,9 @@ struct TimerView: View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
                 LevelPill(state: state)
+                FullscreenStatPill(
+                    text: "\(state.totalBuyInsAndRebuys) \(String(localized: "timer_entries")) · \(String(format: String(localized: "payout_amount_format"), formatted(state.totalPrizePool)))"
+                )
                 Spacer()
                 if let onToggleFullscreen {
                     Button(action: onToggleFullscreen) {
@@ -241,6 +244,19 @@ private struct TournamentSummaryCard: View {
     }
 }
 
+private struct FullscreenStatPill: View {
+    let text: String
+
+    var body: some View {
+        Text(text)
+            .font(.caption.weight(.medium))
+            .foregroundStyle(RTTheme.onSurfaceMuted)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(RTTheme.surfaceElevated.opacity(0.92), in: Capsule())
+    }
+}
+
 private struct LevelPill: View {
     let state: TournamentState
 
@@ -340,6 +356,7 @@ private struct QuickStats: View {
         HStack(spacing: 10) {
             InfoCard(label: String(localized: "timer_remaining_players"), value: "\(state.activePlayers.count)/\(state.players.count)")
             InfoCard(label: String(localized: "timer_entries"), value: "\(state.totalBuyInsAndRebuys)")
+            InfoCard(label: String(localized: "tab_payout"), value: String(format: String(localized: "payout_amount_format"), formatted(state.totalPrizePool)))
         }
     }
 }
