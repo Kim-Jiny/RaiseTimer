@@ -129,6 +129,7 @@ struct TournamentConfig: Codable, Hashable {
     var fullscreenLogoFileName: String? = nil
     var fullscreenLogoBase64: String? = nil
     var savedBlindStructures: [BlindStructurePreset] = []
+    var turnTimeChipSeconds: Int = 30
 
     enum CodingKeys: String, CodingKey {
         case startingStack
@@ -141,6 +142,7 @@ struct TournamentConfig: Codable, Hashable {
         case fullscreenLogoFileName
         case fullscreenLogoBase64
         case savedBlindStructures
+        case turnTimeChipSeconds
     }
 
     init() {}
@@ -157,6 +159,7 @@ struct TournamentConfig: Codable, Hashable {
         fullscreenLogoFileName = try container.decodeIfPresent(String.self, forKey: .fullscreenLogoFileName)
         fullscreenLogoBase64 = try container.decodeIfPresent(String.self, forKey: .fullscreenLogoBase64)
         savedBlindStructures = try container.decodeIfPresent([BlindStructurePreset].self, forKey: .savedBlindStructures) ?? []
+        turnTimeChipSeconds = try container.decodeIfPresent(Int.self, forKey: .turnTimeChipSeconds) ?? 30
     }
 
     static func defaultBlindStructure() -> [BlindLevel] {

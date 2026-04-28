@@ -9,6 +9,12 @@ struct TurnTimerView: View {
     var onToggleFullscreen: (() -> Void)? = nil
 
     private let presets = [15, 30, 45, 60, 90, 120]
+    @State private var timeChipText: String = ""
+    @FocusState private var timeChipFocused: Bool
+
+    private var timeChipSeconds: Int {
+        store.state.config.turnTimeChipSeconds
+    }
 
     var body: some View {
         Group {
@@ -46,6 +52,8 @@ struct TurnTimerView: View {
                     timerRing(size: 300, fontSize: 72)
 
                     Spacer()
+
+                    timeChipField
 
                     controlButtons(compact: false)
                 }
@@ -150,6 +158,45 @@ struct TurnTimerView: View {
 
     // MARK: - Shared Components
 
+    private var timeChipField: some View {
+        HStack(spacing: 12) {
+            Text(String(localized: "turn_timer_time_chip"))
+                .font(.subheadline.bold())
+                .foregroundStyle(.white)
+
+            TextField("", text: $timeChipText)
+                .keyboardType(.numberPad)
+                .focused($timeChipFocused)
+                .multilineTextAlignment(.center)
+                .font(.headline.bold())
+                .foregroundStyle(RTTheme.feltGreenDark)
+                .frame(width: 70, height: 36)
+                .background(RTTheme.chipGold, in: RoundedRectangle(cornerRadius: 10))
+                .onAppear {
+                    if timeChipText.isEmpty { timeChipText = String(timeChipSeconds) }
+                }
+                .onChange(of: timeChipFocused) { _, focused in
+                    if !focused { commitTimeChip() }
+                }
+                .onSubmit { commitTimeChip() }
+
+            Text(String(localized: "turn_timer_seconds_unit"))
+                .font(.subheadline)
+                .foregroundStyle(.white.opacity(0.85))
+
+            Spacer()
+        }
+        .padding(.horizontal, 4)
+    }
+
+    private func commitTimeChip() {
+        let trimmed = timeChipText.trimmingCharacters(in: .whitespaces)
+        let parsed = Int(trimmed) ?? timeChipSeconds
+        let clamped = max(1, min(parsed, 600))
+        store.updateConfig { $0.turnTimeChipSeconds = clamped }
+        timeChipText = String(clamped)
+    }
+
     private var presetButtons: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 10) {
@@ -215,6 +262,20 @@ struct TurnTimerView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, compact ? 12 : 16)
                     .background(RTTheme.surfaceHighlight, in: RoundedRectangle(cornerRadius: 16))
+            }
+
+            Button {
+                engine.addTime(timeChipSeconds)
+            } label: {
+                Label(
+                    String(format: String(localized: "turn_timer_add_time"), timeChipSeconds),
+                    systemImage: "plus.circle.fill"
+                )
+                .font(.headline)
+                .foregroundStyle(.white)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, compact ? 12 : 16)
+                .background(RTTheme.feltGreen, in: RoundedRectangle(cornerRadius: 16))
             }
 
             Button {

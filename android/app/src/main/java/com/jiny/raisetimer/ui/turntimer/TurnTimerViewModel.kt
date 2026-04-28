@@ -76,10 +76,22 @@ class TurnTimerViewModel(private val app: Application) : AndroidViewModel(app) {
     }
 
     fun reset() {
+        val wasRunning = _state.value.isRunning
         pause()
         _state.value = _state.value.copy(
             remainingSeconds = _state.value.totalSeconds,
             hasAlerted = false,
+        )
+        if (wasRunning) start()
+    }
+
+    fun addTime(seconds: Int) {
+        if (seconds <= 0) return
+        val current = _state.value
+        val nextRemaining = current.remainingSeconds + seconds
+        _state.value = current.copy(
+            remainingSeconds = nextRemaining,
+            hasAlerted = if (current.hasAlerted && nextRemaining > 0) false else current.hasAlerted,
         )
     }
 

@@ -14,7 +14,7 @@ final class TurnTimerEngine {
 
     var progress: Double {
         guard totalSeconds > 0 else { return 0 }
-        return Double(remainingSeconds) / Double(totalSeconds)
+        return min(1.0, Double(remainingSeconds) / Double(totalSeconds))
     }
 
     func selectPreset(_ seconds: Int) {
@@ -51,13 +51,25 @@ final class TurnTimerEngine {
     }
 
     func reset() {
+        let wasRunning = isRunning
         pause()
         remainingSeconds = totalSeconds
         hasAlerted = false
+        if wasRunning {
+            start()
+        }
     }
 
     func toggle() {
         if isRunning { pause() } else { start() }
+    }
+
+    func addTime(_ seconds: Int) {
+        guard seconds > 0 else { return }
+        remainingSeconds += seconds
+        if hasAlerted && remainingSeconds > 0 {
+            hasAlerted = false
+        }
     }
 
     private func expire() {

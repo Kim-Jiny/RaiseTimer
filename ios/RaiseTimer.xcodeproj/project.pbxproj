@@ -16,21 +16,21 @@
 		84107837CC7F49C696E4B480 /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7ABEB8F6EF0159CCBF67F99F /* TimerView.swift */; };
 		84C5C04AF7F5889DA7C55451 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 805CDC2D0F23E8F01815833A /* Assets.xcassets */; };
 		99A801CC03629CE917A830F3 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8444EF517CBBBB4D98ECD30D /* ContentView.swift */; };
-		AFFAF5A4BA353D9F4A795429 /* PayoutCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E121677BDF6148CD6F42AE29 /* PayoutCalculator.swift */; };
-		B9ACDC8B613FC6A77999B60D /* PlayersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99F5F819D015979D003C502D /* PlayersView.swift */; };
-		BB28BBF6FCE486DDA10BB98E /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF80207ABD9AEB37332BC81C /* Models.swift */; };
-		CF0388461F7EAE897D957A0E /* RaiseTimerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDE93F4F60FB4AE3C00A3EDA /* RaiseTimerApp.swift */; };
-		FE881669B78A8B67B107184F /* TournamentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F20C8ABB641D9482DBC622E /* TournamentStore.swift */; };
 		A1B2C3D4E5F6A7B8C9D0E1F2 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = F1A2B3C4D5E6F7A8B9C0D1E2 /* Localizable.xcstrings */; };
 		AA11BB22CC33DD44EE55FF66 /* TournamentSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11BB22CC33DD44EE55FF67 /* TournamentSetupView.swift */; };
+		AFFAF5A4BA353D9F4A795429 /* PayoutCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E121677BDF6148CD6F42AE29 /* PayoutCalculator.swift */; };
+		B9ACDC8B613FC6A77999B60D /* PlayersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99F5F819D015979D003C502D /* PlayersView.swift */; };
 		BB22CC33DD44EE55FF660011 /* TurnTimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB22CC33DD44EE55FF660012 /* TurnTimerView.swift */; };
+		BB28BBF6FCE486DDA10BB98E /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF80207ABD9AEB37332BC81C /* Models.swift */; };
+		CF0388461F7EAE897D957A0E /* RaiseTimerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDE93F4F60FB4AE3C00A3EDA /* RaiseTimerApp.swift */; };
 		DD33EE44FF550066AA770088 /* TurnTimerEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD33EE44FF550066AA770089 /* TurnTimerEngine.swift */; };
+		FE881669B78A8B67B107184F /* TournamentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F20C8ABB641D9482DBC622E /* TournamentStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		14D0E8137A8D4C3A9B4E1F10 /* LogoStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogoStore.swift; sourceTree = "<group>"; };
-		2A6F77B0D34F4F099B934D7F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		224B4CBEC42C6685EBB65E52 /* TimerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerEngine.swift; sourceTree = "<group>"; };
+		2A6F77B0D34F4F099B934D7F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		3A8064A2FE4CE3EBD95F77D2 /* SoundPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SoundPlayer.swift; sourceTree = "<group>"; };
 		4D300060B479BBBDD7F92414 /* PayoutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayoutView.swift; sourceTree = "<group>"; };
 		6C2570570CB1B249EEA56A3C /* StructureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StructureView.swift; sourceTree = "<group>"; };
@@ -39,14 +39,14 @@
 		8444EF517CBBBB4D98ECD30D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8F20C8ABB641D9482DBC622E /* TournamentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TournamentStore.swift; sourceTree = "<group>"; };
 		99F5F819D015979D003C502D /* PlayersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayersView.swift; sourceTree = "<group>"; };
+		AA11BB22CC33DD44EE55FF67 /* TournamentSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TournamentSetupView.swift; sourceTree = "<group>"; };
+		BB22CC33DD44EE55FF660012 /* TurnTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnTimerView.swift; sourceTree = "<group>"; };
 		C413E9DEEE4FB34B80CA53A6 /* RaiseTimer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RaiseTimer.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		DD33EE44FF550066AA770089 /* TurnTimerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnTimerEngine.swift; sourceTree = "<group>"; };
 		E121677BDF6148CD6F42AE29 /* PayoutCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PayoutCalculator.swift; sourceTree = "<group>"; };
 		EDE93F4F60FB4AE3C00A3EDA /* RaiseTimerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RaiseTimerApp.swift; sourceTree = "<group>"; };
 		EF80207ABD9AEB37332BC81C /* Models.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		F1A2B3C4D5E6F7A8B9C0D1E2 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
-		AA11BB22CC33DD44EE55FF67 /* TournamentSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TournamentSetupView.swift; sourceTree = "<group>"; };
-		BB22CC33DD44EE55FF660012 /* TurnTimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnTimerView.swift; sourceTree = "<group>"; };
-		DD33EE44FF550066AA770089 /* TurnTimerEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TurnTimerEngine.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -64,14 +64,6 @@
 				4D300060B479BBBDD7F92414 /* PayoutView.swift */,
 			);
 			path = Payout;
-			sourceTree = "<group>";
-		};
-		CC44DD55EE66FF770088AA99 /* TurnTimer */ = {
-			isa = PBXGroup;
-			children = (
-				BB22CC33DD44EE55FF660012 /* TurnTimerView.swift */,
-			);
-			path = TurnTimer;
 			sourceTree = "<group>";
 		};
 		6BF5F8E0986D42909054E18E /* Features */ = {
@@ -132,6 +124,14 @@
 				AA11BB22CC33DD44EE55FF67 /* TournamentSetupView.swift */,
 			);
 			path = Players;
+			sourceTree = "<group>";
+		};
+		CC44DD55EE66FF770088AA99 /* TurnTimer */ = {
+			isa = PBXGroup;
+			children = (
+				BB22CC33DD44EE55FF660012 /* TurnTimerView.swift */,
+			);
+			path = TurnTimer;
 			sourceTree = "<group>";
 		};
 		E6ED035C0D0C452E15FF00E3 /* Domain */ = {
@@ -323,7 +323,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = HW9XJ9J5M2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = RaiseTimer;
@@ -336,7 +336,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiny.raisetimer;
 				PRODUCT_NAME = RaiseTimer;
 				SDKROOT = iphoneos;
@@ -349,7 +349,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 3;
 				DEVELOPMENT_TEAM = HW9XJ9J5M2;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = RaiseTimer;
@@ -362,7 +362,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0.0;
+				MARKETING_VERSION = 1.0.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.jiny.raisetimer;
 				PRODUCT_NAME = RaiseTimer;
 				SDKROOT = iphoneos;

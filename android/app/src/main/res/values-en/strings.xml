@@ -121,6 +121,9 @@
     <string name="turn_timer_pause">Pause</string>
     <string name="turn_timer_reset">Reset</string>
     <string name="turn_timer_times_up">Time\'s Up!</string>
+    <string name="turn_timer_add_time">+%1$ds</string>
+    <string name="turn_timer_time_chip">Time Chip</string>
+    <string name="turn_timer_seconds_unit">sec</string>
 
     <!-- Common -->
     <string name="default_tournament_name">Default Tournament</string>

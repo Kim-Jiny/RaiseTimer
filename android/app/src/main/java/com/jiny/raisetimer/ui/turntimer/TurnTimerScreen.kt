@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
@@ -30,7 +32,15 @@ import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -65,12 +75,14 @@ fun TurnTimerScreen(
     isFullscreen: Boolean = false,
     onToggleFullscreen: (() -> Unit)? = null,
     logoFileName: String? = null,
+    timeChipSeconds: Int = 30,
+    onUpdateTimeChip: (Int) -> Unit = {},
 ) {
     val palette = LocalRaiseTimerPalette.current
     val timerState by turnTimerViewModel.state.collectAsStateWithLifecycle()
 
     val progress = if (timerState.totalSeconds > 0)
-        timerState.remainingSeconds.toFloat() / timerState.totalSeconds.toFloat()
+        (timerState.remainingSeconds.toFloat() / timerState.totalSeconds.toFloat()).coerceAtMost(1f)
     else 0f
 
     val progressColor = when {
@@ -103,9 +115,11 @@ fun TurnTimerScreen(
                 timerState = timerState,
                 progress = progress,
                 progressColor = progressColor,
+                timeChipSeconds = timeChipSeconds,
                 onSelectPreset = { turnTimerViewModel.selectPreset(it) },
                 onToggle = { turnTimerViewModel.toggle() },
                 onReset = { turnTimerViewModel.reset() },
+                onAddTime = { turnTimerViewModel.addTime(timeChipSeconds) },
                 onClose = onToggleFullscreen,
             )
         } else {
@@ -114,9 +128,12 @@ fun TurnTimerScreen(
                 progress = progress,
                 progressColor = progressColor,
                 contentPadding = contentPadding,
+                timeChipSeconds = timeChipSeconds,
                 onSelectPreset = { turnTimerViewModel.selectPreset(it) },
                 onToggle = { turnTimerViewModel.toggle() },
                 onReset = { turnTimerViewModel.reset() },
+                onAddTime = { turnTimerViewModel.addTime(timeChipSeconds) },
+                onUpdateTimeChip = onUpdateTimeChip,
                 onToggleFullscreen = onToggleFullscreen,
             )
         }
@@ -129,9 +146,12 @@ private fun normalLayout(
     progress: Float,
     progressColor: Color,
     contentPadding: PaddingValues,
+    timeChipSeconds: Int,
     onSelectPreset: (Int) -> Unit,
     onToggle: () -> Unit,
     onReset: () -> Unit,
+    onAddTime: () -> Unit,
+    onUpdateTimeChip: (Int) -> Unit,
     onToggleFullscreen: (() -> Unit)?,
 ) {
     val palette = LocalRaiseTimerPalette.current
@@ -183,7 +203,11 @@ private fun normalLayout(
 
         Spacer(modifier = Modifier.weight(1f))
 
-        controlRow(timerState, onToggle, onReset)
+        timeChipField(timeChipSeconds, onUpdateTimeChip)
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        controlRow(timerState, timeChipSeconds, onToggle, onReset, onAddTime)
     }
 }
 
@@ -192,9 +216,11 @@ private fun fullscreenLayout(
     timerState: TurnTimerState,
     progress: Float,
     progressColor: Color,
+    timeChipSeconds: Int,
     onSelectPreset: (Int) -> Unit,
     onToggle: () -> Unit,
     onReset: () -> Unit,
+    onAddTime: () -> Unit,
     onClose: (() -> Unit)?,
 ) {
     val palette = LocalRaiseTimerPalette.current
@@ -240,7 +266,7 @@ private fun fullscreenLayout(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            controlRow(timerState, onToggle, onReset)
+            controlRow(timerState, timeChipSeconds, onToggle, onReset, onAddTime)
         }
     }
 }
@@ -336,15 +362,70 @@ private fun timerRing(
 }
 
 @Composable
+private fun timeChipField(
+    timeChipSeconds: Int,
+    onUpdateTimeChip: (Int) -> Unit,
+) {
+    val palette = LocalRaiseTimerPalette.current
+    var text by remember { mutableStateOf(timeChipSeconds.toString()) }
+
+    LaunchedEffect(timeChipSeconds) {
+        if (text.toIntOrNull() != timeChipSeconds) {
+            text = timeChipSeconds.toString()
+        }
+    }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+        Text(
+            text = stringResource(R.string.turn_timer_time_chip),
+            color = palette.onSurface,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.weight(1f),
+        )
+        OutlinedTextField(
+            value = text,
+            onValueChange = { input ->
+                val digits = input.filter { it.isDigit() }.take(3)
+                text = digits
+                val parsed = digits.toIntOrNull()
+                if (parsed != null && parsed in 1..600) {
+                    onUpdateTimeChip(parsed)
+                }
+            },
+            singleLine = true,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+            modifier = Modifier.width(96.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedTextColor = palette.onSurface,
+                unfocusedTextColor = palette.onSurface,
+                focusedBorderColor = palette.chipGold,
+                unfocusedBorderColor = palette.surfaceHighlight,
+                cursorColor = palette.chipGold,
+            ),
+        )
+        Text(
+            text = stringResource(R.string.turn_timer_seconds_unit),
+            color = palette.onSurface,
+        )
+    }
+}
+
+@Composable
 private fun controlRow(
     timerState: TurnTimerState,
+    timeChipSeconds: Int,
     onToggle: () -> Unit,
     onReset: () -> Unit,
+    onAddTime: () -> Unit,
 ) {
     val palette = LocalRaiseTimerPalette.current
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Button(
             onClick = onReset,
@@ -360,6 +441,25 @@ private fun controlRow(
             Icon(Icons.Filled.Refresh, contentDescription = null)
             Text(
                 text = stringResource(R.string.turn_timer_reset),
+                modifier = Modifier.padding(start = 6.dp),
+                fontWeight = FontWeight.Bold,
+            )
+        }
+
+        Button(
+            onClick = onAddTime,
+            modifier = Modifier
+                .weight(1f)
+                .height(56.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = palette.feltGreen,
+                contentColor = palette.onSurface,
+            ),
+            shape = RoundedCornerShape(16.dp),
+        ) {
+            Icon(Icons.Filled.AddCircle, contentDescription = null)
+            Text(
+                text = stringResource(R.string.turn_timer_add_time, timeChipSeconds),
                 modifier = Modifier.padding(start = 6.dp),
                 fontWeight = FontWeight.Bold,
             )

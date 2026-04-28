@@ -40,6 +40,7 @@ data class TournamentConfig(
     val fullscreenLogoFileName: String? = null,
     val fullscreenLogoBase64: String? = null,
     val savedBlindStructures: List<BlindStructurePreset> = emptyList(),
+    val turnTimeChipSeconds: Int = 30,
 ) {
     companion object {
         fun defaultBlindStructure(): List<BlindLevel> = listOf(

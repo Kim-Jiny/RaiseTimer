@@ -179,10 +179,15 @@ fun RaiseTimerApp(
             }
             composable(Tab.Setup.route) { TournamentSetupScreen(viewModel, PaddingValues()) }
             composable(Tab.TurnTimer.route) {
+                val tournamentState by viewModel.state.collectAsStateWithLifecycle()
                 TurnTimerScreen(
                     contentPadding = PaddingValues(),
                     turnTimerViewModel = turnTimerViewModel,
                     onToggleFullscreen = { navController.navigate(TurnTimerFullscreenRoute) },
+                    timeChipSeconds = tournamentState.config.turnTimeChipSeconds,
+                    onUpdateTimeChip = { seconds ->
+                        viewModel.updateConfig { it.copy(turnTimeChipSeconds = seconds.coerceIn(1, 600)) }
+                    },
                 )
             }
             composable(TurnTimerFullscreenRoute) {
@@ -291,6 +296,7 @@ private fun TurnTimerFullscreenRoute(
             isFullscreen = true,
             onToggleFullscreen = onClose,
             logoFileName = tournamentState.config.fullscreenLogoFileName,
+            timeChipSeconds = tournamentState.config.turnTimeChipSeconds,
         )
     }
 }
