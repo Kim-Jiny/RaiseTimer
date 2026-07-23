@@ -147,7 +147,7 @@ private fun TournamentSummaryCard(state: TournamentState) {
                 fontWeight = FontWeight.Bold,
             )
             state.finalStandings.take(3).forEach { player ->
-                val amount = player.placement?.let { payouts.getOrNull(it - 1)?.amount } ?: 0
+                val amount = player.placement?.let { payouts.getOrNull(it - 1)?.amount } ?: 0L
                 Text(
                     text = stringResource(R.string.timer_place_format, player.placement ?: 0, player.name, "%,d".format(amount)),
                     color = palette.onSurfaceMuted,

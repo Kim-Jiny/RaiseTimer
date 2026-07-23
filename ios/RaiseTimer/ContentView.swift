@@ -6,11 +6,15 @@ struct ContentView: View {
     @Environment(TurnTimerEngine.self) private var turnTimerEngine
     @State private var isTimerFullscreen = false
     @State private var isTurnTimerFullscreen = false
+    // Owned by ContentView (not the TabView), so the selected tab survives the TabView's
+    // `.id`-driven rebuild on theme change — otherwise changing the theme snaps the user
+    // back to the first tab.
+    @State private var selectedTab = 0
 
     var body: some View {
         let themePreset = store.state.config.themePreset
         let _ = (RTTheme.currentPreset = themePreset)
-        TabView {
+        TabView(selection: $selectedTab) {
             TimerView(
                 onStartFullscreen: {
                     store.start()
@@ -21,9 +25,11 @@ struct ContentView: View {
                 }
             )
                 .tabItem { Label(String(localized: "tab_timer"), systemImage: "timer") }
+                .tag(0)
 
             TournamentSetupView()
                 .tabItem { Label(String(localized: "tab_setup"), systemImage: "person.3.fill") }
+                .tag(1)
 
             TurnTimerView(
                 onToggleFullscreen: {
@@ -31,12 +37,15 @@ struct ContentView: View {
                 }
             )
                 .tabItem { Label(String(localized: "tab_turn_timer"), systemImage: "stopwatch") }
+                .tag(2)
 
             PayoutView()
                 .tabItem { Label(String(localized: "tab_payout"), systemImage: "dollarsign.circle.fill") }
+                .tag(3)
 
             SettingsView()
                 .tabItem { Label(String(localized: "tab_settings"), systemImage: "paintpalette.fill") }
+                .tag(4)
         }
         .id("theme-\(themePreset.rawValue)")
         .tint(RTTheme.color(.chipGold, preset: themePreset))

@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 data class TournamentState(
     val config: TournamentConfig = TournamentConfig(),
     val currentLevelIndex: Int = 0,
-    val remainingSeconds: Int = TournamentConfig().levels.firstOrNull()?.durationSeconds ?: 0,
+    val remainingSeconds: Int = config.levels.firstOrNull()?.durationSeconds ?: 0,
     val isRunning: Boolean = false,
     val players: List<Player> = emptyList(),
     /**
@@ -45,15 +45,16 @@ data class TournamentState(
     val totalBuyInsAndRebuys: Int
         get() = players.sumOf { 1 + it.rebuyCount }
 
-    /** Gross collected from entries before deducting house fee. */
-    val totalBuyInsGross: Int
-        get() = totalBuyInsAndRebuys * config.buyInAmount
+    /** Gross collected from entries before deducting house fee. Widened to [Long] to match
+     *  iOS 64-bit arithmetic and avoid overflow on large buy-ins × entry counts. */
+    val totalBuyInsGross: Long
+        get() = totalBuyInsAndRebuys.toLong() * config.buyInAmount
 
     /** Total fee taken by the house (per-entry fee × number of entries). */
-    val totalFee: Int
-        get() = totalBuyInsAndRebuys * config.feePerEntry
+    val totalFee: Long
+        get() = totalBuyInsAndRebuys.toLong() * config.feePerEntry
 
     /** Net prize pool distributed to winners (gross minus fee, floored at 0). */
-    val totalPrizePool: Int
+    val totalPrizePool: Long
         get() = (totalBuyInsGross - totalFee).coerceAtLeast(0)
 }

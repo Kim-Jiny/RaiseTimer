@@ -79,4 +79,10 @@ final class TurnTimerEngine {
         let feedback = UINotificationFeedbackGenerator()
         feedback.notificationOccurred(.error)
     }
+
+    deinit {
+        // Invalidate the repeating timer so it doesn't keep firing (and waking the run loop)
+        // after the engine is deallocated while a countdown is in progress.
+        timer?.invalidate()
+    }
 }

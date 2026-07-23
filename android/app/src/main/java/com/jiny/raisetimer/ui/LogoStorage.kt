@@ -79,10 +79,12 @@ private fun Bitmap.scaleDown(maxDimension: Int): Bitmap {
     val currentMax = maxOf(width, height)
     if (currentMax <= maxDimension) return this
     val scale = maxDimension.toFloat() / currentMax.toFloat()
+    // Guard against a 0 dimension for extreme aspect ratios (e.g. 2400×1), which would make
+    // createScaledBitmap throw IllegalArgumentException.
     return Bitmap.createScaledBitmap(
         this,
-        (width * scale).toInt(),
-        (height * scale).toInt(),
+        (width * scale).toInt().coerceAtLeast(1),
+        (height * scale).toInt().coerceAtLeast(1),
         true,
     )
 }

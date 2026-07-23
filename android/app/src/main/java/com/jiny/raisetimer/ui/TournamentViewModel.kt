@@ -49,6 +49,9 @@ class TournamentViewModel(app: Application) : AndroidViewModel(app) {
     init {
         viewModelScope.launch {
             val restoredStorage = repository.storageFlow.first()
+            // Always adopt the restored slot set so no saved tournament is lost, even if a
+            // mutation raced ahead during this async cold-load. Only the in-flight _state is
+            // preserved (below) — its current-slot snapshot is reconciled on the next persist.
             appStorage = restoredStorage
             publishSlotMetadata()
             val restored = restoredStorage.tournaments

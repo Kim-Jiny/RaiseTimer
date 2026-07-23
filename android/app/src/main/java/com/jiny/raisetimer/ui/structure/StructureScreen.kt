@@ -27,8 +27,10 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -298,11 +300,23 @@ private fun NumberField(
     onValueChange: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var text by remember { mutableStateOf(value.toString()) }
+    // Re-sync the local buffer when the external value changes from elsewhere (steppers,
+    // switching tournament slots). Skip the empty-vs-zero case so the user can clear the
+    // field to retype without it snapping straight back to "0".
+    LaunchedEffect(value) {
+        if (text.toIntOrNull() != value && !(text.isEmpty() && value == 0)) {
+            text = value.toString()
+        }
+    }
     OutlinedTextField(
-        value = value.toString(),
-        onValueChange = { text ->
-            val parsed = text.filter { it.isDigit() }.toIntOrNull() ?: 0
-            onValueChange(parsed)
+        value = text,
+        onValueChange = { raw ->
+            // Cap at 9 digits so buy-in / starting stack stay within Int range; the
+            // prize-pool arithmetic widens to Long downstream.
+            val digits = raw.filter { it.isDigit() }.take(9)
+            text = digits
+            onValueChange(digits.toIntOrNull() ?: 0)
         },
         label = { Text(label) },
         placeholder = { Text("0") },

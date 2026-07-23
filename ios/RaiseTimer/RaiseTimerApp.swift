@@ -19,6 +19,12 @@ struct RaiseTimerApp: App {
     @State private var turnTimerEngine = TurnTimerEngine()
     @Environment(\.scenePhase) private var scenePhase
 
+    /// The screen should stay awake while either the tournament clock or the dealer turn
+    /// timer is counting down.
+    private var keepAwake: Bool {
+        store.state.isRunning || turnTimerEngine.isRunning
+    }
+
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -27,13 +33,16 @@ struct RaiseTimerApp: App {
                 .onAppear {
                     // Apply initial screen-awake state (e.g. when restoring a running
                     // tournament across a cold launch).
-                    UIApplication.shared.isIdleTimerDisabled = store.state.isRunning
+                    UIApplication.shared.isIdleTimerDisabled = keepAwake
                 }
-                .onChange(of: store.state.isRunning) { _, isRunning in
-                    // Keep the screen awake while the timer is running so players can
-                    // glance at it without having to tap. Reset automatically when paused,
-                    // finished, or on app termination.
-                    UIApplication.shared.isIdleTimerDisabled = isRunning
+                .onChange(of: store.state.isRunning) { _, _ in
+                    // Keep the screen awake while the tournament clock OR the dealer turn
+                    // timer is running so players can glance at it without having to tap.
+                    // Reset automatically when both stop, or on app termination.
+                    UIApplication.shared.isIdleTimerDisabled = keepAwake
+                }
+                .onChange(of: turnTimerEngine.isRunning) { _, _ in
+                    UIApplication.shared.isIdleTimerDisabled = keepAwake
                 }
         }
         .onChange(of: scenePhase) { _, newPhase in
@@ -42,7 +51,7 @@ struct RaiseTimerApp: App {
                 // returns to foreground (handles backgrounding, screen lock, etc.).
                 store.catchUpFromBackground()
                 // Re-apply keep-awake in case it was reset while backgrounded.
-                UIApplication.shared.isIdleTimerDisabled = store.state.isRunning
+                UIApplication.shared.isIdleTimerDisabled = keepAwake
             } else if newPhase == .background {
                 // Let the device sleep normally when the app is not visible.
                 UIApplication.shared.isIdleTimerDisabled = false

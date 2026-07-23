@@ -86,7 +86,11 @@ final class TournamentStore {
 
     private func launchTickerLoop() {
         stopTicker()
-        timerTask = Task { [weak self] in
+        // Hop to the main actor: TournamentStore is @Observable, so its `state` must be
+        // mutated on the main thread (SwiftUI Observation requires it). Running on MainActor
+        // also serializes each tick with user actions (pause/reset), so an in-flight tick can
+        // never write a stale `isRunning = true` back over a pause the user just made.
+        timerTask = Task { @MainActor [weak self] in
             while !Task.isCancelled {
                 try? await Task.sleep(nanoseconds: 1_000_000_000)
                 guard let self, self.state.isRunning, !Task.isCancelled else { return }

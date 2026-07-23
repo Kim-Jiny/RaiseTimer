@@ -175,6 +175,12 @@ struct TurnTimerView: View {
                 .onAppear {
                     if timeChipText.isEmpty { timeChipText = String(timeChipSeconds) }
                 }
+                .onChange(of: timeChipSeconds) { _, newValue in
+                    // Re-sync when the underlying value changes (e.g. switching tournament
+                    // slots), unless the user is actively editing. Prevents a stale field
+                    // value from being committed back over another slot's setting.
+                    if !timeChipFocused { timeChipText = String(newValue) }
+                }
                 .onChange(of: timeChipFocused) { _, focused in
                     if !focused { commitTimeChip() }
                 }

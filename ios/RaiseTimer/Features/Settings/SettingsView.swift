@@ -144,11 +144,15 @@ struct SettingsView: View {
             .navigationTitle(String(localized: "settings_nav_title"))
         }
         .task(id: selectedPhoto) {
-            guard let selectedPhoto,
-                  let data = try? await selectedPhoto.loadTransferable(type: Data.self)
+            guard let item = selectedPhoto,
+                  let data = try? await item.loadTransferable(type: Data.self)
             else { return }
             let fileName = LogoStore.saveImageData(data)
             store.updateFullscreenLogoFileName(fileName)
+            // Clear the selection so re-picking the *same* photo (e.g. after Remove logo)
+            // changes the task id again and re-runs this import. Without this, PhotosPicker
+            // reports the same item as equal and the import silently no-ops.
+            selectedPhoto = nil
         }
     }
 }

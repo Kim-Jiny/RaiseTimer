@@ -73,6 +73,7 @@ fun RaiseTimerApp(
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = backStackEntry?.destination
     val tournamentState by viewModel.state.collectAsStateWithLifecycle()
+    val turnTimerState by turnTimerViewModel.state.collectAsStateWithLifecycle()
     val palette = LocalRaiseTimerPalette.current
 
     // Re-sync the running timer against wall-clock time whenever the app comes back to
@@ -88,13 +89,14 @@ fun RaiseTimerApp(
         onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
     }
 
-    // Keep the screen awake while the timer is running so players can glance at it
-    // without having to tap to unlock. Cleared automatically when the timer pauses,
-    // finishes, or this composable leaves composition.
+    // Keep the screen awake while either the tournament clock or the dealer turn timer is
+    // running so players can glance at it without having to tap to unlock. Cleared
+    // automatically when both stop, or this composable leaves composition.
     val view = LocalView.current
-    DisposableEffect(tournamentState.isRunning) {
+    val keepScreenOn = tournamentState.isRunning || turnTimerState.isRunning
+    DisposableEffect(keepScreenOn) {
         val window = (view.context as? Activity)?.window
-        if (tournamentState.isRunning) {
+        if (keepScreenOn) {
             window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         } else {
             window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
