@@ -23,8 +23,8 @@ android {
         applicationId = "com.jiny.raisetimer"
         minSdk = 26
         targetSdk = 36
-        versionCode = 4
-        versionName = "1.0.2"
+        versionCode = 5
+        versionName = "1.1.0"
 
         vectorDrawables { useSupportLibrary = true }
         multiDexEnabled = true
